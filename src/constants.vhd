@@ -14,6 +14,7 @@ package constants is
    constant CYCLE_TIME    : time := 10 ns; -- Rate of 100 MHz
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
    constant PROG_FILENAME : string := "code.asm"; -- Name of code to run.
+   constant NOCACHE       : std_logic := '1';
    
    -- From CPU Requirments
    constant CPU_WIDTH          : integer := 32; -- 32 bit MIPS CPU
@@ -71,14 +72,60 @@ package constants is
    constant CACHE_ACCESS_TIME : time := CACHE_ACCESS_CYCLES * CYCLE_TIME;
    
    -- Created some additional types for the various memory elements
-   type mem_t     is array(MEM_DEPTH-1 downto 0)    of std_logic_vector(WORD_SIZE-1 downto 0); 
-   type icache_t  is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
-   type dcache_t  is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
-   type regfile_t is array(NUM_REGS-1 downto 0)     of std_logic_vector(WORD_SIZE-1 downto 0);
+   type mem_t     is array(MEM_DEPTH-1 downto 0)    of bit_vector(WORD_SIZE-1 downto 0); 
+   type icache_t  is array(ICACHE_DEPTH-1 downto 0) of bit_vector(WORD_SIZE-1 downto 0);
+   type dcache_t  is array(DCACHE_DEPTH-1 downto 0) of bit_vector(WORD_SIZE-1 downto 0);
+   type regfile_t is array(NUM_REGS-1 downto 0)     of bit_vector(WORD_SIZE-1 downto 0);
    
    -- Metric Counters
-   variable ICACHE_HITS : integer := 0;
-   variable DCACHE_HITS : integer := 0;
-   variable DBSET       : integer := 0;
+   shared variable ICACHE_HITS : integer := 0;
+   shared variable DCACHE_HITS : integer := 0;
+   shared variable DBSET       : integer := 0;
    
-end Constants;
+   function log2(A: integer) return integer;
+   function max4(A: integer;
+                 B: integer;
+                 C: integer;
+                 D: integer) return integer;
+end constants;
+
+package body constants is 
+
+   function log2(A: integer) return integer is
+   begin
+      for I in 1 to 30 loop  -- Works for up to 32 bit integers
+         if(2**I > A) then 
+            return(I-1);  
+         end if;
+      end loop;
+      report "constants.vhd: error could not determine log2 of integer)" severity FAILURE;
+      return(-1);
+   end function;
+   
+   function max4(A: integer;
+                 B: integer;
+                 C: integer;
+                 D: integer) return integer is
+   variable maxAB : integer ;
+   variable maxCD : integer ;
+   begin
+      if A > B then
+         maxAB := A;
+      else 
+         maxAB := B;
+      end if;
+      
+      if C > D then
+         maxCD := C;
+      else
+         maxCD := D;
+      end if;
+      
+      if maxAB > maxCD then
+         return maxAB;
+      else
+         return maxCD;
+      end if;
+   end function;
+   
+end package body;
