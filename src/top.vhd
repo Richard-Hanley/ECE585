@@ -13,50 +13,37 @@ entity top is
    Port (
       clk       : in std_logic;
       bus_clk   : in std_logic;
-      mem_clk   : in std_logic;
-      cache_clk : in std_logic; 
       reset     : in std_logic;
+      
+      -- Interface to CPU
+      data     : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+      addr     : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
+      wr       : in    std_logic;
+      done     : out   std_logic;
       
       -- Interface to Memory
       mem_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      mem_addr : in    std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
-      mem_wr   : in    std_logic;
+      mem_addr : out   std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+      mem_wr   : out   std_logic;
       
       -- Interface to ICache
       icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      icache_addr : in    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-      icache_wr   : in    std_logic;
+      icache_addr : out   std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
+      icache_wr   : out   std_logic;
       
       -- Interface to DCache
       dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      dcache_addr : in    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-      dcache_wr   : in    std_logic
+      dcache_addr : out   std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
+      dcache_wr   : out   std_logic
    );
 end top;
 
 architecture Behavioral of top is
-   signal cache_cpu_data : std_logic_vector(BUS_WIDTH-1 downto 0);
-   signal cache_cpu_addr : std_logic_vector(ADDR_WIDTH-1 downto 0);
-   signal cache_cpu_wr   : std_logic;
-   signal cache_cpu_done : std_logic;
    
    signal mem_cache_data : std_logic_vector(BUS_WIDTH-1 downto 0);
    signal mem_cache_addr : std_logic_vector(ADDR_WIDTH-1 downto 0);
    signal mem_cache_wr   : std_logic;
    signal mem_cache_done : std_logic;
-   
-   component cpu is
-      Port (
-         clk   : in    std_logic;
-         reset : in    std_logic;
-         
-         -- Interface to Cache
-         data  : inout std_logic_vector(BUS_WIDTH-1  downto 0);
-         addr  : out   std_logic_vector(ADDR_WIDTH-1 downto 0);
-         wr    : out   std_logic;
-         done  : in    std_logic
-      );
-   end component;
       
    component cache_ctl is
       Generic (
@@ -70,13 +57,13 @@ architecture Behavioral of top is
          
          -- Interface to icache
          icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         icache_addr : in    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-         icache_wr   : in    std_logic;
+         icache_addr : out    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
+         icache_wr   : out    std_logic;
          
          -- Interface to dcache
          dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         dcache_addr : in    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-         dcache_wr   : in    std_logic;
+         dcache_addr : out    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
+         dcache_wr   : out    std_logic;
          
          -- Interface to CPU
          data_in  : inout std_logic_vector(BUS_WIDTH-1 downto 0);
@@ -94,8 +81,10 @@ architecture Behavioral of top is
       
    component memory_ctl is
       Generic (
-         READ_DELAY  : integer := 0;
-         WRITE_DELAY : integer := 0
+         RD_INIT_CYCLES : integer := MEM_PORT_READ_CYCLES - MEM_ADD_READ_CYCLES;
+         WR_INIT_CYCLES : integer := 4-3; -- Access time - additional write time.
+         RD_DATA_CYCLES : integer := 2;   -- Additional read time.
+         WR_DATA_CYCLES : integer := 3    -- Additional write time.
       );
       Port (
          clk   : in    std_logic;
@@ -103,8 +92,8 @@ architecture Behavioral of top is
          
          -- Interface to Memory
          data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         addr : in    std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
-         wr   : in    std_logic;
+         addr : out    std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+         wr   : out    std_logic;
 
          -- Interface to Cache
          data_in   : inout std_logic_vector(BUS_WIDTH-1 downto 0);
@@ -117,47 +106,23 @@ architecture Behavioral of top is
 begin
    GEN_NOCACHE : if NOCACHE = '1' generate
    begin
-      NCPU_INST: cpu
-      Port map(
-         clk   => clk,
-         reset => reset,
          
-         -- Interface to Cache
-         data  => cache_cpu_data,
-         addr  => cache_cpu_addr,
-         wr    => cache_cpu_wr,
-         done  => cache_cpu_done
-      );
-      
-   NMEM_CTL: memory_ctl
-      Port map (
-         clk   => bus_clk,
-         reset => reset,
-         
-         -- Interface to Memory
-         data => mem_data,
-         addr => mem_addr,
-         wr   => mem_wr,
+      NMEM_CTL: memory_ctl
+         Port map (
+            clk   => bus_clk,
+            reset => reset,
+            
+            -- Interface to Memory
+            data => mem_data,
+            addr => mem_addr,
+            wr   => mem_wr,
 
-         -- Interface to Cache
-         data_in  => cache_cpu_data,
-         addr_in  => cache_cpu_addr,
-         wr_in    => mem_cache_wr,
-         done_out => cache_cpu_done     
-      );
-      
-   
-      CPU_INST: cpu
-      Port map(
-         clk   => clk,
-         reset => reset,
-         
-         -- Interface to Cache
-         data  => cache_cpu_data,
-         addr  => cache_cpu_addr,
-         wr    => cache_cpu_wr,
-         done  => cache_cpu_done
-      );
+            -- Interface to CPU
+            data_in  => data,
+            addr_in  => addr,
+            wr_in    => wr,
+            done_out => done   
+         );
    end generate;
    
    GEN_CACHE : if NOCACHE = '0' generate   
@@ -178,10 +143,10 @@ begin
          dcache_wr   => dcache_wr,
          
          -- Interface to CPU
-         data_in  => cache_cpu_data,
-         addr_in  => cache_cpu_addr,
-         wr_in    => cache_cpu_wr,
-         done_out => cache_cpu_done,
+         data_in  => data,
+         addr_in  => addr,
+         wr_in    => wr,
+         done_out => done,
          
          -- Interface to Memory
          data_out => mem_cache_data,

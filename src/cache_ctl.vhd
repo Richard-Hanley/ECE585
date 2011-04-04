@@ -20,13 +20,13 @@ entity cache_ctl is
       
       -- Interface to icache
       icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      icache_addr : in    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-      icache_wr   : in    std_logic;
+      icache_addr : out    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
+      icache_wr   : out    std_logic;
       
       -- Interface to dcache
       dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      dcache_addr : in    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-      dcache_wr   : in    std_logic;
+      dcache_addr : out    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
+      dcache_wr   : out    std_logic;
       
       -- Interface to CPU
       data_in  : inout std_logic_vector(BUS_WIDTH-1 downto 0);

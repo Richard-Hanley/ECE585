@@ -31,7 +31,7 @@ package constants is
       constant AND_FUNC : std_logic_vector(5 downto 0) := "100100";
       constant SLT_FUNC : std_logic_vector(5 downto 0) := "101010";
    constant BEQ_OP : std_logic_vector(31 downto 26) := "000100";
-   constant J_OP   : std_logic_vector(31 downto 26) := "000100";
+   constant J_OP   : std_logic_vector(31 downto 26) := "000010";
    
    -- Additional OPs based on ID Number A20254941
    constant BNE_OP : std_logic_vector(31 downto 26) := "000101";    -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
@@ -56,7 +56,7 @@ package constants is
    
    -- Assumptions:
    -- The memory bus will run at 32x the speed of the processor to gain the needed bandwidth.
-   constant BUS_CYLE_TIME : time := CYCLE_TIME / BUS_BW;
+   constant BUS_CYCLE_TIME : time := CYCLE_TIME / BUS_BW;
    -- Assuming 32 bit addressing (no PAE, etc) 
    constant ADDR_WIDTH  : integer := 32;
    -- Assuming a 32 bit data bus throughout. 
@@ -72,21 +72,21 @@ package constants is
    constant CACHE_ACCESS_TIME : time := CACHE_ACCESS_CYCLES * CYCLE_TIME;
    
    -- Created some additional types for the various memory elements
-   type mem_t     is array(MEM_DEPTH-1 downto 0)    of bit_vector(WORD_SIZE-1 downto 0); 
-   type icache_t  is array(ICACHE_DEPTH-1 downto 0) of bit_vector(WORD_SIZE-1 downto 0);
-   type dcache_t  is array(DCACHE_DEPTH-1 downto 0) of bit_vector(WORD_SIZE-1 downto 0);
-   type regfile_t is array(NUM_REGS-1 downto 0)     of bit_vector(WORD_SIZE-1 downto 0);
+   type mem_t     is array(MEM_DEPTH-1 downto 0)    of std_logic_vector(WORD_SIZE-1 downto 0); 
+   type icache_t  is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
+   type dcache_t  is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
+   type regfile_t is array(NUM_REGS-1 downto 0)     of std_logic_vector(WORD_SIZE-1 downto 0);
    
    -- Metric Counters
    shared variable ICACHE_HITS : integer := 0;
    shared variable DCACHE_HITS : integer := 0;
    shared variable DBSET       : integer := 0;
    
-   function log2(A: integer) return integer;
-   function max4(A: integer;
-                 B: integer;
-                 C: integer;
-                 D: integer) return integer;
+   function log2(A : integer) return integer;
+   function max4(A : integer;
+                 B : integer;
+                 C : integer;
+                 D : integer) return integer;
 end constants;
 
 package body constants is 
@@ -102,12 +102,12 @@ package body constants is
       return(-1);
    end function;
    
-   function max4(A: integer;
-                 B: integer;
-                 C: integer;
-                 D: integer) return integer is
-   variable maxAB : integer ;
-   variable maxCD : integer ;
+   function max4(A : integer;
+                 B : integer;
+                 C : integer;
+                 D : integer) return integer is
+   variable maxAB : integer;
+   variable maxCD : integer;
    begin
       if A > B then
          maxAB := A;
@@ -129,3 +129,4 @@ package body constants is
    end function;
    
 end package body;
+

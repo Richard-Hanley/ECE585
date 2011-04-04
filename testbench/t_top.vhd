@@ -6,124 +6,187 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
+
 use WORK.CONSTANTS.ALL;
  
-ENTITY t_top IS
-END t_top;
+entity t_top is
+end t_top;
  
-ARCHITECTURE behavior OF t_top IS 
+architecture behavior of t_top is 
  
     -- Component Declaration for the Unit Under Test (UUT)
- 
-    COMPONENT top
-    PORT(
-         clk : IN  std_logic;
-         bus_clk : IN  std_logic;
-         mem_clk : IN  std_logic;
-         cache_clk : IN  std_logic;
-         reset : IN  std_logic;
-         mem_data : INOUT  std_logic_vector(31 downto 0);
-         mem_addr : IN  std_logic_vector(64 downto 0);
-         mem_wr : IN  std_logic;
-         icache_data : INOUT  std_logic_vector(31 downto 0);
-         icache_addr : IN  std_logic_vector(64 downto 0);
-         icache_wr : IN  std_logic;
-         dcache_data : INOUT  std_logic_vector(31 downto 0);
-         dcache_addr : IN  std_logic_vector(64 downto 0);
-         dcache_wr : IN  std_logic
-        );
-    END COMPONENT;
+   component top
+      Port (
+         clk       : in std_logic;
+         bus_clk   : in std_logic;
+         reset     : in std_logic;
+         
+         -- Interface to CPU
+         data     : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+         addr     : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
+         wr       : in    std_logic;
+         done     : out   std_logic;
+         
+         -- Interface to Memory
+         mem_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+         mem_addr : out   std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+         mem_wr   : out   std_logic;
+         
+         -- Interface to ICache
+         icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+         icache_addr : out   std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
+         icache_wr   : out   std_logic;
+         
+         -- Interface to DCache
+         dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+         dcache_addr : out   std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
+         dcache_wr   : out   std_logic
+      );
+   end component;
     
-
-   --Inputs
-   signal clk : std_logic := '0';
-   signal bus_clk : std_logic := '0';
-   signal mem_clk : std_logic := '0';
-   signal cache_clk : std_logic := '0';
-   signal reset : std_logic := '0';
-   signal mem_addr : std_logic_vector(64 downto 0) := (others => '0');
-   signal mem_wr : std_logic := '0';
-   signal icache_addr : std_logic_vector(64 downto 0) := (others => '0');
-   signal icache_wr : std_logic := '0';
-   signal dcache_addr : std_logic_vector(64 downto 0) := (others => '0');
-   signal dcache_wr : std_logic := '0';
-
-	--BiDirs
-   signal mem_data : std_logic_vector(31 downto 0);
-   signal icache_data : std_logic_vector(31 downto 0);
-   signal dcache_data : std_logic_vector(31 downto 0);
-
-   -- Clock period definitions
-   constant clk_period : time := 10 ns;
-   constant bus_clk_period : time := 10 ns;
-   constant mem_clk_period : time := 10 ns;
-   constant cache_clk_period : time := 10 ns;
- 
-BEGIN
- 
-	-- Instantiate the Unit Under Test (UUT)
-   uut: top PORT MAP (
-          clk => clk,
-          bus_clk => bus_clk,
-          mem_clk => mem_clk,
-          cache_clk => cache_clk,
-          reset => reset,
-          mem_data => mem_data,
-          mem_addr => mem_addr,
-          mem_wr => mem_wr,
-          icache_data => icache_data,
-          icache_addr => icache_addr,
-          icache_wr => icache_wr,
-          dcache_data => dcache_data,
-          dcache_addr => dcache_addr,
-          dcache_wr => dcache_wr
-        );
+   component cpu 
+      Port (
+         clk   : in    std_logic;
+         reset : in    std_logic;
+         
+         -- Interface to Memory Hierarchy
+         data  : inout std_logic_vector(BUS_WIDTH-1  downto 0);
+         addr  : out   std_logic_vector(ADDR_WIDTH-1 downto 0);
+         wr    : out   std_logic;
+         done  : in    std_logic
+      );
+   end component;
+   
+   component mem_elem
+      Generic (
+         ELEM_WIDTH : integer := ADDR_WIDTH;
+         LD_FILENAME : string  := "zeros.hex"
+      );
+      Port (
+         data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+         addr : in    std_logic_vector(ELEM_WIDTH-1 downto 0);
+         wr   : in    std_logic
+      );
+   end component;
+   
+   signal clk       : std_logic;
+   signal bus_clk   : std_logic;
+   signal mem_clk   : std_logic;
+   signal cache_clk : std_logic;
+   signal reset     : std_logic;
+   signal data     : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal addr     : std_logic_vector(ADDR_WIDTH-1 downto 0);
+   signal wr       : std_logic;
+   signal done     : std_logic;
+   signal mem_data : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal mem_addr : std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+   signal mem_wr   : std_logic;
+   signal icache_data : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal icache_addr : std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
+   signal icache_wr   : std_logic;
+   signal dcache_data : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal dcache_addr : std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
+   signal dcache_wr   : std_logic;
+   
+begin
 
    -- Clock process definitions
    clk_process: process
    begin
 		clk <= '0';
-		wait for clk_period/2;
+		wait for CYCLE_TIME/2;
 		clk <= '1';
-		wait for clk_period/2;
+		wait for CYCLE_TIME/2;
    end process;
- 
+   
    bus_clk_process: process
    begin
-		bus_clk <= '0';
-		wait for bus_clk_period/2;
-		bus_clk <= '1';
-		wait for bus_clk_period/2;
+      bus_clk <= '0';
+      wait for BUS_CYCLE_TIME/2;
+      clk <= '1';
+      wait for BUS_CYCLE_TIME/2;
    end process;
- 
-   mem_clk_process: process
-   begin
-		mem_clk <= '0';
-		wait for mem_clk_period/2;
-		mem_clk <= '1';
-		wait for mem_clk_period/2;
-   end process;
- 
-   cache_clk_process: process
-   begin
-		cache_clk <= '0';
-		wait for cache_clk_period/2;
-		cache_clk <= '1';
-		wait for cache_clk_period/2;
-   end process;
- 
+      
+   uut: top
+      Port Map (
+         clk         => clk,
+         bus_clk     => bus_clk,
+         reset       => reset,
+         -- Interface to CPU
+         data        => data,
+         addr        => addr,
+         wr          => wr,
+         done        => done,
+         -- Interface to Memory
+         mem_data    => mem_data,
+         mem_addr    => mem_addr,
+         mem_wr      => mem_wr,
+         -- Interface to ICache
+         icache_data => icache_data,
+         icache_addr => icache_addr,
+         icache_wr   => icache_wr,
+         -- Interface to DCache
+         dcache_data => dcache_data,
+         dcache_addr => dcache_addr,
+         dcache_wr   => dcache_wr
+      );
+   
+   cpu_inst: cpu
+      Port map (
+         clk   => clk,
+         reset => reset,
+         
+         -- Interface to Memory Hierarchy
+         data  => data,
+         addr  => addr,
+         wr    => wr,
+         done  => done
+      );
 
+   mem: mem_elem
+      Generic map (
+         ELEM_WIDTH => log2(MEM_DEPTH),
+         LD_FILENAME => PROG_FILENAME
+      )
+      Port map (
+         data => mem_data,
+         addr => mem_addr,
+         wr   => mem_wr
+      );       
+      
+   dcache: mem_elem
+      Generic map (
+         ELEM_WIDTH => log2(DCACHE_DEPTH)
+      )
+      Port map (
+         data => dcache_data,
+         addr => dcache_addr,
+         wr   => dcache_wr
+      );
+
+   icache: mem_elem
+      Generic map (
+         ELEM_WIDTH => log2(ICACHE_DEPTH)
+      )
+      Port map (
+         data => icache_data,
+         addr => icache_addr,
+         wr   => icache_wr
+      );
+   
    -- Stimulus process
    stim_proc: process
-   begin		
+   begin
+      reset <= '1';
       -- hold reset state for 100 ns.
       wait for 100 ns;	
 
-      wait for clk_period*10;
-
-      -- insert stimulus here 
-
+      wait for CYCLE_TIME*10;      
+      -- insert stimulus here
+      
+      reset <= '0'; -- start the magic happening.
+      
       wait;
    end process;
 
-END;
+end;
