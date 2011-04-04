@@ -1,6 +1,16 @@
 -------------------------------------------------------
 -- Engineer: Spenser Gilliland
 -- License: GPLv3
+--
+-- Description: A MIPS32 emulator.
+-- 
+-- Theory of Operation:
+--    This is a non-synthesizable MIPS32 emulator.
+--    It simply performs the operation according to the
+--    instruction in a total of 2 cycles (plus memory 
+--    access times.)  The first cycle is used to 
+--    increment the program counter the second performs 
+--    the operation.
 -------------------------------------------------------
 
 library IEEE;
@@ -22,9 +32,87 @@ entity cpu is
 end cpu;
 
 architecture Behavioral of cpu is
-
+   constant START_ADDRES : integer := 0;
+   
+   signal regs : regfile_t;
+   signal PC : std_logic_vector(ADDR_WIDTH-1 downto 0);
+   signal IR : std_logic_vector(DATA_WIDTH-1 downto 0);
+   
+   alias OPCODE  : std_logic_vector(31 downto 26) is IR(31 downto 26);
+   alias RS      : std_logic_vector(25 downto 21) is IR(25 downto 21);
+   alias RT      : std_logic_vector(20 downto 16) is IR(20 downto 16);
+   alias RD      : std_logic_vector(15 downto 11) is IR(15 downto 11);
+   alias SHAMT   : std_logic_vector(10 downto 6)  is IR(10 downto 6);
+   alias FUNC    : std_logic_vector(5  downto 0)  is IR(5 downto 0);
+   alias IMM     : std_logic_vector(15 downto 0)  is IR(15 downto 0);
+   alias ADDRESS : std_logic_vector(25 downto 0)  is IR(25 downto 0);
+   
 begin
 
+   INSTR_EXEC: process 
+   begin
+      wr <= '0';
+      addr <= PC;
+      wait for CYCLE_TIME;
+      wait until done = '1';
+      IR <= data;
+      wait for CYCLE_TIME;
+      if    OPCODE = LW_OP then
+         addr <= IMM + regs(conv_integer(RS));
+         wait for CYCLE_TIME; -- Give the done signal time to be reset.
+         wait until done = '1';
+         regs(conv_integer(RT)) <= data;
+         report "Completed LW R" & conv_integer(RT) & " " & conv_integer(IMM) & "(R" & conv_integer(RS) & ")" severity NOTE;
+      elsif OPCODE = SW_OP then
+         wr <= '1';
+         addr <= IMM + regs(conv_integer(RS));
+         data <= regs(conv_integer(RT));
+         wait for CYCLE_TIME; -- Give the done signal time to be reset
+         wait until done = '1';
+         report "Completed SW R" & conv_integer(RT) & " " & conv_integer(IMM) & "(R" & conv_integer(RS) & ")" severity NOTE;
+      elsif OPCODE = ALU_OP then
+         if    FUNC = ADD_FUNC then
+            regs(conv_integer(RD)) <= regs(conv_integer(RS)) + regs(conv_integer(RT));
+            report "Completed ADD R" & conv_integer(RD) & " R" & conv_integer(RS) & "R" & conv_integer(RT) severity NOTE;
+         elsif FUNC = AND_FUNC then
+            regs(conv_integer(RD)) <= regs(conv_integer(RS)) and regs(conv_integer(RT));
+            report "Completed AND R" & conv_integer(RD) & " R" & conv_integer(RS) & "R" & conv_integer(RT) severity NOTE;
+         elsif FUNC = SLT_FUNC then
+            if regs(conv_integer(RS)) < regs(conv_integer(RT)) then   
+               regs(conv_integer(RD)) <= 1;
+            else
+               regs(conv_integer(RD)) <= 0;
+            end if;
+            report "Completed SLT R" & conv_integer(RD) & " R" & conv_integer(RS) & "R" & conv_integer(RT) severity NOTE;
+         elsif FUNC = JR_FUNC then
+            PC <= regs(conv_integer(RS)) - 4; -- 4 is incremented below.
+            report "Completed JR R" & conv_integer(RS) severity NOTE;
+         else
+            report "cpu.vhd: Unknown ALU function" severity ERROR;
+         end if;
+      elsif OPCODE = BEQ_OP then
+         if regs(conv_integer(RS)) = regs(conv_integer(RT) then
+            PC <= (IMM sll 2) - 4; -- 4 is incremented below.
+         end if;
+         report "Completed BEQ R" & conv_integer(RS) & " R" & conv_integer(RT) & " " & conv_integer(IMM) severity NOTE;
+      elsif OPCODE = J_OP then
+         PC <= (ADDRESS sll 2) - 4; 
+      elsif OPCODE = BNE_OP then
+         if regs(conv_integer(RS)) /= regs(conv_integer(RT) then
+            PC <= (IMM sll 2) - 4; -- 4 is incremented below.
+         end if;
+         report "Completed BNE R" & conv_integer(RS) & " R" & conv_integer(RT) & " " & conv_integer(IMM sll 2) severity NOTE;
+      elsif OPCODE = LUI_OP then
+         regs(conv_integer(RT)) <= IMM sll 16;
+         report "Completed LUI R" & conv_integer(RT) & " " & conv_integer(IMM) severity NOTE;
+      else
+         report "cpu.vhd: Unknown OP Code" severity ERROR;
+      end if;
+      
+      wait for CYCLE_TIME;
+      PC <= PC + 4; -- Increment program counter
+   end process;
+   
 end Behavioral;
 
 
