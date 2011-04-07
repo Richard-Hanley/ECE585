@@ -2,7 +2,8 @@ README
 
 This is a project where a microprocessor system with cache is emulated using VHDL.  
 
-This project is also a test of team programming with git.
+This project is also a test of team programming with git. It is one of the 
+first attempt for the two of us to use a distributed version control system.
 
 
 Written by:
