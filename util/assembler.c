@@ -63,7 +63,7 @@ unsigned int assemble(char* line)
 		}
       assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
                  ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
-                 ((ADD_FUNC << FUSTART) & FUMASK);
+                 ((AND_FUNC << FUSTART) & FUMASK);
 	}
 	else if(strcmp(opcode, "SLT") == 0)
 	{
@@ -74,18 +74,17 @@ unsigned int assemble(char* line)
 		}
       assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
                  ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
-                 ((ADD_FUNC << FUSTART) & FUMASK);
+                 ((SLT_FUNC << FUSTART) & FUMASK);
 	}
 	else if(strcmp(opcode, "JR") == 0)
 	{
-		if(sscanf(line, "JR R%i, R%i, R%i;", &d, &s, &t) != 3)
+		if(sscanf(line, "JR R%i;", &s) != 1)
 		{
 			perror("Bad JR");
 			exit(EXIT_FAILURE);
 		}
-      assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
-                 ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
-                 ((ADD_FUNC << FUSTART) & FUMASK);
+      assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) |
+                 ((JR_FUNC << FUSTART) & FUMASK);
 	}
 	else if(strcmp(opcode, "BEQ") == 0)
 	{
@@ -152,7 +151,7 @@ int main(int argc, char* argv[])
 	while( fgets(line, MAX_LINE_LENGTH, code) != NULL)
 	{
 		output = assemble(line);
-		printf("%x\n", output);
+		printf("%08x\n", output);
 	}
 
 	return EXIT_SUCCESS;

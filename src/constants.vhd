@@ -13,7 +13,7 @@ package constants is
    -- My Constants
    constant CYCLE_TIME    : time := 10 ns; -- Rate of 100 MHz
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
-   constant PROG_FILENAME : string := "code.asm"; -- Name of code to run.
+   constant PROG_FILENAME : string := "code.hex"; -- Name of code to run.
    constant NOCACHE       : std_logic := '1';
    
    -- From CPU Requirments
