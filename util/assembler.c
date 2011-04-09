@@ -12,7 +12,7 @@
 unsigned int assemble(char* line)
 {
 	char opcode[6];
-	unsigned int d, t, s, imm, sh, addr;
+	unsigned int d, t, s, imm, sh, addr, h;
    unsigned int assembly;
    
 	/* Find the opcode */
@@ -65,16 +65,17 @@ unsigned int assemble(char* line)
                  ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
                  ((AND_FUNC << FUSTART) & FUMASK);
 	}
-	else if(strcmp(opcode, "SLT") == 0)
+	else if(strcmp(opcode, "SLL") == 0)
 	{
-		if(sscanf(line, "SLT R%i, R%i, R%i;", &d, &s, &t) != 3)
+		if(sscanf(line, "SLL R%i, R%i, %i;", &d, &t, &h) != 3)
 		{
-			perror("Bad SLT");
+			perror("Bad SLL");
 			exit(EXIT_FAILURE);
 		}
+        s = 0;//it is a somewhat odd instruction 
       assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
                  ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
-                 ((SLT_FUNC << FUSTART) & FUMASK);
+                 ((h << HSTART) & HMASK) | ((SLL_FUNC << FUSTART) & FUMASK);
 	}
 	else if(strcmp(opcode, "JR") == 0)
 	{
@@ -125,12 +126,35 @@ unsigned int assemble(char* line)
 		assembly = ((LUI_OP << OPSTART) & OPMASK) | ((t << RTSTART) & RTMASK) | 
 		           ((imm << IMSTART) & IMMASK);
 	}
-	else
+	
+	else if(strcmp(opcode, "NOR") == 0 )
+	{
+		if(sscanf(line, "NOR R%i, R%i, R%i;", &d, &s, &t) != 3)
+		{
+			perror("Bad NOR");
+			exit(EXIT_FAILURE);
+		}
+      assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
+                 ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
+                 ((NOR_FUNC << FUSTART) & FUMASK);
+	}
+	else if(strcmp(opcode, "SLT") == 0 )
+	{
+		if(sscanf(line, "SLT R%i, R%i, R%i;", &d, &s, &t) != 3)
+		{
+			perror("Bad SLT");
+			exit(EXIT_FAILURE);
+		}
+      assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
+                 ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
+                 ((SLT_FUNC << FUSTART) & FUMASK);
+	}
+
+    else
 	{
 		perror("Bad OP");
 		exit(EXIT_FAILURE);
 	}
-
 	return assembly;
 }
 
