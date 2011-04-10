@@ -302,7 +302,6 @@ proc set_process_props {} {
    project set "Report Fastest Path(s) in Each Constraint" "true" -process "Generate Post-Map Static Timing"
    project set "Generate Datasheet Section" "true" -process "Generate Post-Map Static Timing"
    project set "Generate Timegroups Section" "false" -process "Generate Post-Map Static Timing"
-   project set "Project Description" ""
    project set "Property Specification in Project File" "Store non-default values only"
    project set "Case Implementation Style" "None" -process "Synthesize - XST"
    project set "Decoder Extraction" "true" -process "Synthesize - XST"

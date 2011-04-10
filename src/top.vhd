@@ -20,6 +20,7 @@ entity top is
       addr     : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
       wr       : in    std_logic;
       done     : out   std_logic;
+      instr    : in    std_logic;
       
       -- Interface to Memory
       mem_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
@@ -70,6 +71,7 @@ architecture Behavioral of top is
          addr_in  : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
          wr_in    : in    std_logic;
          done_out : out   std_logic;
+         instr    : in    std_logic;
          
          -- Interface to Memory
          data_out : inout std_logic_vector(BUS_WIDTH-1 downto 0);
@@ -141,6 +143,7 @@ begin
          addr_in  => addr,
          wr_in    => wr,
          done_out => done,
+         instr    => instr,
          
          -- Interface to Memory
          data_out => mem_cache_data,
