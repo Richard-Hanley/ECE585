@@ -23,16 +23,16 @@ use WORK.CONSTANTS.ALL;
 entity memory_ctl is
    Generic (
       RD_INIT_CYCLES : integer := MEM_PORT_READ_CYCLES - MEM_ADD_READ_CYCLES;
-      WR_INIT_CYCLES : integer := 4-3; -- Access time - additional write time.
-      RD_DATA_CYCLES : integer := 2;   -- Additional read time.
-      WR_DATA_CYCLES : integer := 3    -- Additional write time.
+      WR_INIT_CYCLES : integer := MEM_PORT_WRITE_CYCLES - MEM_ADD_WRITE_CYCLES;
+      RD_DATA_CYCLES : integer := MEM_ADD_READ_CYCLES;
+      WR_DATA_CYCLES : integer := MEM_ADD_WRITE_CYCLES 
    );
    Port (
       clk   : in    std_logic;
       reset : in    std_logic;
       
       -- Interface to Memory
-      data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
+      data : inout  std_logic_vector(BUS_WIDTH-1 downto 0);
       addr : out    std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
       wr   : out    std_logic;
 
@@ -74,20 +74,21 @@ architecture Behavioral of memory_ctl is
                                               WR_INIT_BUS_CYCLES, 
                                               RD_DATA_BUS_CYCLES, 
                                               WR_DATA_BUS_CYCLES));
-   constant CNTR_MAX : integer := CNTR_WIDTH**2 - 1;
+   constant CNTR_MAX : integer := 2**CNTR_WIDTH - 1;
    signal cntr     : std_logic_vector(CNTR_WIDTH-1 downto 0);
    
 begin
    
-   data <= data_in;
-   addr <= addr_in;
+   data <= data_in when wr_in = '1' else (others => 'Z');
+   data_in <= data when wr_in = '0' else (others => 'Z');
+   
+   addr <= addr_in(log2(MEM_DEPTH)-1 downto 0);
    wr   <= wr_in;
 
    -- Register the data, addr and write signals to be able to detect changes
    REG_PROC: process(clk, wr_in, addr_in, data_in) 
    begin
       if rising_edge(clk) then
-         wr_reg <= wr_in;
          addr_reg <= addr_in;
          data_reg <= data_in;
       end if;

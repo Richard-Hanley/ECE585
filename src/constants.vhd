@@ -11,6 +11,7 @@ use IEEE.STD_LOGIC_1164.all;
 
 package constants is
    -- My Constants
+   constant START_ADDR    : std_logic_vector(31 downto 0) := (others => '0');
    constant CYCLE_TIME    : time := 10 ns; -- Rate of 100 MHz
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
    constant PROG_FILENAME : string := "code.hex"; -- Name of code to run.
@@ -30,6 +31,8 @@ package constants is
       constant ADD_FUNC : std_logic_vector(5 downto 0) := "100000";
       constant AND_FUNC : std_logic_vector(5 downto 0) := "100100";
       constant SLT_FUNC : std_logic_vector(5 downto 0) := "101010";
+      constant SLL_FUNC : std_logic_vector(5 downto 0) := "000000";
+      constant NOR_FUNC : std_logic_vector(5 downto 0) := "100111"; -- From http://www.cs.umd.edu/class/spring2003/cmsc311/Notes/Mips/bitwise.html
    constant BEQ_OP : std_logic_vector(31 downto 26) := "000100";
    constant J_OP   : std_logic_vector(31 downto 26) := "000010";
    
@@ -71,12 +74,6 @@ package constants is
    constant MEM_WRITE_TIME : time := (MEM_PORT_WRITE_CYCLES + MEM_ADD_WRITE_CYCLES) * CYCLE_TIME;
    constant CACHE_ACCESS_TIME : time := CACHE_ACCESS_CYCLES * CYCLE_TIME;
    
-   -- Created some additional types for the various memory elements
-   type mem_t     is array(MEM_DEPTH-1 downto 0)    of std_logic_vector(WORD_SIZE-1 downto 0); 
-   type icache_t  is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
-   type dcache_t  is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
-   type regfile_t is array(NUM_REGS-1 downto 0)     of std_logic_vector(WORD_SIZE-1 downto 0);
-   
    -- Metric Counters
    shared variable ICACHE_HITS : integer := 0;
    shared variable DCACHE_HITS : integer := 0;
@@ -87,6 +84,7 @@ package constants is
                  B : integer;
                  C : integer;
                  D : integer) return integer;
+                 
 end constants;
 
 package body constants is 

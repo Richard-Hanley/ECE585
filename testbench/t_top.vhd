@@ -59,28 +59,28 @@ architecture behavior of t_top is
    
    component mem_elem
       Generic (
-         ELEM_WIDTH : integer := ADDR_WIDTH;
+         ELEM_DEPTH  : integer := MEM_DEPTH;
          LD_FILENAME : string  := "zeros.hex"
       );
       Port (
          data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         addr : in    std_logic_vector(ELEM_WIDTH-1 downto 0);
+         addr : in    std_logic_vector(log2(ELEM_DEPTH)-1 downto 0);
          wr   : in    std_logic
       );
    end component;
    
-   signal clk       : std_logic;
-   signal bus_clk   : std_logic;
-   signal mem_clk   : std_logic;
-   signal cache_clk : std_logic;
-   signal reset     : std_logic;
-   signal data     : std_logic_vector(BUS_WIDTH-1 downto 0);
-   signal addr     : std_logic_vector(ADDR_WIDTH-1 downto 0);
-   signal wr       : std_logic;
-   signal done     : std_logic;
-   signal mem_data : std_logic_vector(BUS_WIDTH-1 downto 0);
-   signal mem_addr : std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
-   signal mem_wr   : std_logic;
+   signal clk         : std_logic;
+   signal bus_clk     : std_logic;
+   signal mem_clk     : std_logic;
+   signal cache_clk   : std_logic;
+   signal reset       : std_logic;
+   signal data        : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal addr        : std_logic_vector(ADDR_WIDTH-1 downto 0);
+   signal wr          : std_logic;
+   signal done        : std_logic;
+   signal mem_data    : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal mem_addr    : std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+   signal mem_wr      : std_logic;
    signal icache_data : std_logic_vector(BUS_WIDTH-1 downto 0);
    signal icache_addr : std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
    signal icache_wr   : std_logic;
@@ -103,7 +103,7 @@ begin
    begin
       bus_clk <= '0';
       wait for BUS_CYCLE_TIME/2;
-      clk <= '1';
+      bus_clk <= '1';
       wait for BUS_CYCLE_TIME/2;
    end process;
       
@@ -145,7 +145,7 @@ begin
 
    mem: mem_elem
       Generic map (
-         ELEM_WIDTH => log2(MEM_DEPTH),
+         ELEM_DEPTH => MEM_DEPTH,
          LD_FILENAME => PROG_FILENAME
       )
       Port map (
@@ -156,7 +156,7 @@ begin
       
    dcache: mem_elem
       Generic map (
-         ELEM_WIDTH => log2(DCACHE_DEPTH)
+         ELEM_DEPTH => DCACHE_DEPTH
       )
       Port map (
          data => dcache_data,
@@ -166,7 +166,7 @@ begin
 
    icache: mem_elem
       Generic map (
-         ELEM_WIDTH => log2(ICACHE_DEPTH)
+         ELEM_DEPTH => ICACHE_DEPTH
       )
       Port map (
          data => icache_data,

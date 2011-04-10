@@ -106,7 +106,6 @@ architecture Behavioral of top is
 begin
    GEN_NOCACHE : if NOCACHE = '1' generate
    begin
-         
       NMEM_CTL: memory_ctl
          Port map (
             clk   => bus_clk,
@@ -126,6 +125,7 @@ begin
    end generate;
    
    GEN_CACHE : if NOCACHE = '0' generate   
+   begin
    C_CTL: cache_ctl
       Port map (
          clk     => clk,
