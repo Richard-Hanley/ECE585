@@ -93,7 +93,7 @@ package body constants is
    begin
       for I in 1 to 30 loop  -- Works for up to 32 bit integers
          if(2**I > A) then 
-            return(I-1);  
+            return(I);  
          end if;
       end loop;
       report "constants.vhd: error could not determine log2 of integer)" severity FAILURE;

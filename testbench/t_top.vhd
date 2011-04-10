@@ -71,8 +71,6 @@ architecture behavior of t_top is
    
    signal clk         : std_logic;
    signal bus_clk     : std_logic;
-   signal mem_clk     : std_logic;
-   signal cache_clk   : std_logic;
    signal reset       : std_logic;
    signal data        : std_logic_vector(BUS_WIDTH-1 downto 0);
    signal addr        : std_logic_vector(ADDR_WIDTH-1 downto 0);

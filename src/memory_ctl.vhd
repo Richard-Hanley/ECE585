@@ -93,32 +93,21 @@ begin
          data_reg <= data_in;
       end if;
    end process;
-   
-   -- Counter that holds at max value.
-   CNTR_PROC: process(clk, reset, cntr, cntr_rst)
-   begin
-      if rising_edge(clk) then
-         if cntr_rst = '1' or reset = '1' then
-            cntr <= (others => '0');
-         else
-            if cntr /= conv_std_logic_vector(CNTR_MAX, CNTR_WIDTH) then
-               cntr <= cntr + 1;
-            end if;
-         end if;
-      end if;
-   end process;
-   
+      
    -- State Machine for determining when the outputs are done.
-   SYNC_PROC: process(clk, reset, next_state)
+   SYNC_PROC: process(clk, reset, next_state, cntr)
    begin
       if rising_edge(clk) then
          if reset = '1' then
             state <= RD_INIT;
+            cntr <= (others => '0');
          else
             if (state /= next_state) then
-               cntr_rst <= '1';
+               cntr <= (others => '0');
             else
-               cntr_rst <= '0';
+               if cntr /= conv_std_logic_vector(CNTR_MAX, CNTR_WIDTH) then
+                  cntr <= cntr + 1;
+               end if;
             end if;
             state <= next_state;
          end if;
@@ -134,13 +123,13 @@ begin
       end if;
    end process;
    
-   NEXT_STATE_DECODE: process(clk, wr_in, data_in, addr_in, cntr)
+   NEXT_STATE_DECODE: process(clk, state, wr_in, data_in, addr_in, cntr)
    begin
       next_state <= state;
       case (state) is
          when RD_INIT =>
             if wr_in = '0' then
-               if cntr > RD_INIT_BUS_CYCLES then
+               if unsigned(cntr) > RD_INIT_BUS_CYCLES then
                   next_state <= RD_READY;
                end if;
             else

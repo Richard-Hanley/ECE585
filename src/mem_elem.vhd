@@ -57,6 +57,7 @@ begin
       variable iaddr : integer := conv_integer(addr);
    begin
       if wr = '1' then
+         data <= (others => 'Z');
          mem(conv_integer(addr))     <= data(    BYTE_SIZE - 1 downto 0            );
          mem(conv_integer(addr + 1)) <= data(2 * BYTE_SIZE - 1 downto     BYTE_SIZE);
          mem(conv_integer(addr + 2)) <= data(3 * BYTE_SIZE - 1 downto 2 * BYTE_SIZE);

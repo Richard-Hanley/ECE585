@@ -80,12 +80,6 @@ architecture Behavioral of top is
    end component;
       
    component memory_ctl is
-      Generic (
-         RD_INIT_CYCLES : integer := MEM_PORT_READ_CYCLES - MEM_ADD_READ_CYCLES;
-         WR_INIT_CYCLES : integer := 4-3; -- Access time - additional write time.
-         RD_DATA_CYCLES : integer := 2;   -- Additional read time.
-         WR_DATA_CYCLES : integer := 3    -- Additional write time.
-      );
       Port (
          clk   : in    std_logic;
          reset : in    std_logic;
