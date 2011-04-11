@@ -5,6 +5,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use WORK.CONSTANTS.ALL;
 
@@ -52,11 +53,15 @@ architecture Behavioral of cache_ctl is
    constant DENTRY_WIDTH : integer := DTAG_WIDTH + 1 + 1;
     
    -- Add one to the tag width for the valid bit.  FYI: this is just the tag memory not the cache.
-   type itagmem_t is array(IINDEX_DEPTH-1 downto 0) of std_logic_vector(IENTRY_WIDTH - 1 downto 0);
-   type dtagmem_t is array(DINDEX_DEPTH-1 downto 0) of std_logic_vector(DENTRY_WIDTH - 1 downto 0);
+   type itagmem_t is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(IENTRY_WIDTH - 1 downto 0);
+   type dtagmem_t is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(DENTRY_WIDTH - 1 downto 0);
+   type itags_t   is array(WORD_SIZE / BYTE_SIZE - 1 downto 0) of std_logic_vector(IENTRY_WIDTH-1 downto 0);
+   type dtags_t   is array(WORD_SIZE / BYTE_SIZE - 1 downto 0) of std_logic_vector(DENTRY_WIDTH-1 downto 0);
+
+   type idatamem_t is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(BYTE_SIZE-1 downto 0);
+   type ddatamem_t is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(BYTE_SIZE-1 downto 0);
    
-   type idatamem_t is array(IINDEX_DEPTH-1 downto 0) of std_logic_vector(BYTE_SIZE-1 downto 0);
-   type ddatamem_t is array(DINDEX_DEPTH-1 downto 0) of std_logic_vector(BYTE_SIZE-1 downto 0);
+   
    
    type cachesm_t is ( IDLE,
                        IREAD,
@@ -65,7 +70,7 @@ architecture Behavioral of cache_ctl is
    function clear_itags return itagmem_t is
       variable tags : itagmem_t;
    begin
-      for I in tags'length loop
+      for I in tags'range loop
          tags(I) := (others => '0');
       end loop;
       return tags;
@@ -74,7 +79,7 @@ architecture Behavioral of cache_ctl is
    function clear_dtags return dtagmem_t is
       variable tags : dtagmem_t;
    begin
-      for I in tags'length loop
+      for I in tags'range loop
          tags(I) := (others => '0');
       end loop;
       return tags;
@@ -87,8 +92,8 @@ architecture Behavioral of cache_ctl is
    
    signal cache_hit : std_logic;
    
-   signal ientry : array(WORD_SIZE / BYTE_SIZE - 1 downto 0) of std_logic_vector(IENTRY_WIDTH-1 downto 0);
-   signal dentry : array(WORD_SIZE / BYTE_SIZE - 1 downto 0) of std_logic_vector(DENTRY_WIDTH-1 downto 0);
+   signal ientry : itags_t;
+   signal dentry : dtags_t;
    
    signal ivalid : std_logic;
    signal dvalid : std_logic;
@@ -138,30 +143,35 @@ begin
    dcache_hit <= dcache_tag and dvalid;
    
    -- Multiplex depending on instr or data access. TODO: Make this Generic.
-   cache_data <= icache(conv_integer(iindex)+4 downto conv_integer(iindex)) when instr = '1' else dcache(conv_integer(dindex) + 4 downto conv_integer(dindex));
+   cache_data <= icache(conv_integer(iindex) + 4 downto conv_integer(iindex)) 
+                 when instr = '1' 
+                 else dcache(conv_integer(dindex) + 4 downto conv_integer(dindex));
+                 
    hit <= icache_hit when instr = '1' else dcache_hit;
    
    -- Bypass the cache if the data is not in cache;
-   data_in <= cache_data when hit = '1' else data_out;
-   done_out <= '1' when hit = '1' else done_in;
+   addr_out <= cntr      when hit = '1' or wr_in = '1' else addr_in;
+   data_in <= cache_data when hit = '1'                else data_out;
+   done_out <= '1'       when hit = '1'                else done_in;
    
    -- Write through mode
-   addr_out <= addr_in when wr_in = '1' else cache_addr;
    wr_out <= wr_in;
    
    -- Cache statemachine
-   SYNC_PROC: process(clk, reset, next_state, cntr)
+   SYNC_PROC: process(clk, reset, next_state, cntr, addr_in, hit)
    begin
       if rising_edge(clk) then
          if reset = '1' then
-            state <= RD_INIT;
+            state <= IDLE;
             cntr <= (others => '0');
+            start_address <= (others => '0');
          else
-            if (state /= next_state) then
-               cntr <= (others => '0');
+            if state = IDLE and (next_state = IREAD or next_state = DREAD)  then
+               cntr <= addr_in;
+               start_address <= addr_in;
             else
-               if cntr /= conv_std_logic_vector(CNTR_MAX, CNTR_WIDTH) then
-                  cntr <= cntr + 1;
+               if done_in = '1' and hit = '1' then -- Essentially if we have a situation where this is going on in the background.
+                  cntr <= cntr + 4;
                end if;
             end if;
             state <= next_state;
@@ -169,28 +179,33 @@ begin
       end if;
    end process;
    
-   OUTPUT_DECODE: process(state, next_state)
+   OUTPUT_DECODE: process(state, next_state, cntr)
    begin
-      if state = IREAD or state = DREAD then
-         addr_out <= cache_addr;
-         icache(iindex) <= 
+      if state = IREAD then
+         icache(conv_integer(cntr(IINDEX-1 downto 0))) <= data_out when done_in = '1';
+      elsif state = DREAD then
+         dcache(conv_integer(cntr(DINDEX-1 downto 0))) <= data_out when done_in = '1';
       end if;
    end process;
    
-   NEXT_STATE_DECODE: process(clk, state, wr_in, data_in, addr_in, cntr)
+   NEXT_STATE_DECODE: process(clk, state, icache_hit, dcache_hit, instr)
    begin
       next_state <= state;
       case (state) is
          when IDLE =>
-            if icache_hit = '0' then
-            
-            elsif dcache_hit = '0' then
-            
+            if icache_hit = '0' and instr = '1' then
+               next_state <= IREAD;
+            elsif dcache_hit = '0' and instr = '0' then
+               next_state <= DREAD;
             end if;
          when IREAD =>
-            
+            if cntr > start_address + BLOCK_SIZE / BYTE_SIZE then
+               next_state <= IDLE;
+            end if; 
          when DREAD => 
-         
+            if cntr > start_address + BLOCK_SIZE / BYTE_SIZE then
+               next_state <= IDLE;
+            end if;
          when others =>
             report "cache_ctl.vhd: Error bad state" severity FAILURE;
       end case;
