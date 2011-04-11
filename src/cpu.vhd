@@ -30,15 +30,27 @@ entity cpu is
       data  : inout std_logic_vector(BUS_WIDTH-1  downto 0);
       addr  : out   std_logic_vector(ADDR_WIDTH-1 downto 0);
       wr    : out   std_logic;
-      done  : in    std_logic
+      done  : in    std_logic;
+      instr : out   std_logic;
+      busy  : out   std_logic
    );
 end cpu;
 
 architecture Behavioral of cpu is
-   constant START_ADDRES : integer := 0;
+   type regfile_t is array(NUM_REGS-1 downto 0) of std_logic_vector(WORD_SIZE-1 downto 0);
    
-   signal regs : regfile_t;
-   signal PC : std_logic_vector(ADDR_WIDTH-1 downto 0);
+   function clear_regs return regfile_t is
+      variable regfile : regfile_t;
+   begin
+      for I in NUM_REGS-1 downto 0 loop
+         regfile(I) := (others => '0');
+      end loop;
+      return regfile;
+   end function;
+   
+   signal regs : regfile_t := clear_regs;
+   
+   signal PC : std_logic_vector(ADDR_WIDTH-1 downto 0) := START_ADDR;
    signal IR : std_logic_vector(BUS_WIDTH-1 downto 0);
    
    alias OPCODE  : std_logic_vector(31 downto 26) is IR(31 downto 26);
@@ -54,44 +66,60 @@ begin
 
    INSTR_EXEC: process 
    begin
+      instr <= '1';
+      busy <= '1';
+      data <= (others => 'Z');
       wr <= '0';
       addr <= PC;
       wait for CYCLE_TIME;
       wait until done = '1';
+      busy <= '0';
       IR <= data;
       wait for CYCLE_TIME;
+      instr <= '0';
       if    OPCODE = LW_OP then
+         busy <= '1';
          addr <= regs(conv_integer(RS)) + IMM; 
          wait for CYCLE_TIME; -- Give the done signal time to be reset.
          wait until done = '1';
          regs(conv_integer(RT)) <= data;
+         busy <= '0';
          report "Completed LW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = SW_OP then
+         busy <= '1';
          wr <= '1';
          addr <= IMM + regs(conv_integer(RS));
          data <= regs(conv_integer(RT));
          wait for CYCLE_TIME; -- Give the done signal time to be reset
          wait until done = '1';
+         busy <= '0';
          report "Completed SW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = ALU_OP then
          if    FUNC = ADD_FUNC then
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) + regs(conv_integer(RT));
-            report "Completed ADD R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & "R" & integer'image(conv_integer(RT)) severity NOTE;
+            report "Completed ADD R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = AND_FUNC then
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) and regs(conv_integer(RT));
-            report "Completed AND R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & "R" & integer'image(conv_integer(RT)) severity NOTE;
+            report "Completed AND R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = SLT_FUNC then
             if regs(conv_integer(RS)) < regs(conv_integer(RT)) then   
                regs(conv_integer(RD)) <= conv_std_logic_vector(1, BUS_WIDTH);
             else
                regs(conv_integer(RD)) <= (others => '0');
             end if;
-            report "Completed SLT R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & "R" & integer'image(conv_integer(RT)) severity NOTE;
+            report "Completed SLT R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = JR_FUNC then
             PC <= regs(conv_integer(RS)) - 4; -- 4 is incremented below.
             report "Completed JR R" & integer'image(conv_integer(RS)) severity NOTE;
+         elsif FUNC = SLL_FUNC then
+            regs(conv_integer(RD)) <= to_stdlogicvector(to_bitvector(regs(conv_integer(RT))) sll conv_integer(SHAMT));
+            report "Completed SLL R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(SHAMT)) severity NOTE;
+         elsif FUNC = NOR_FUNC then
+            regs(conv_integer(RD)) <= regs(conv_integer(RS)) nor regs(conv_integer(RT));
+            report "Completed NOR R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          else
             report "cpu.vhd: Unknown ALU function" severity ERROR;
+            wait; -- Kill the simulation on a bad instruction
          end if;
       elsif OPCODE = BEQ_OP then
          if regs(conv_integer(RS)) = regs(conv_integer(RT)) then
@@ -110,10 +138,12 @@ begin
          report "Completed LUI R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       else
          report "cpu.vhd: Unknown OP Code" severity ERROR;
+         wait; -- Kill the simulation on a bad instruction.
       end if;
       
       wait for CYCLE_TIME;
       PC <= PC + 4; -- Increment program counter
+      wait for CYCLE_TIME;
    end process;
    
 end Behavioral;
