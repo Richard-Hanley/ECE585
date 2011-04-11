@@ -429,7 +429,7 @@ proc set_process_props {} {
    project set "Verilog Include Directories" "" -process "Synthesize - XST"
    project set "Verilog 2001" "true" -process "Synthesize - XST"
    project set "Verilog Macros" "" -process "Synthesize - XST"
-   project set "Work Directory" "/home/spenser/Desktop/ECE585/ise/xst" -process "Synthesize - XST"
+   project set "Work Directory" "/data/Professional\ Log/classes/Advanced\ Computer\ Architecture\ -\ ECE\ 585/Project2/ise/xst" -process "Synthesize - XST"
    project set "Write Timing Constraints" "false" -process "Synthesize - XST"
    project set "Other XST Command Line Options" "" -process "Synthesize - XST"
    project set "Auto Implementation Compile Order" "true"
