@@ -21,21 +21,12 @@ entity top is
       wr       : in    std_logic;
       done     : out   std_logic;
       instr    : in    std_logic;
+      busy     : in    std_logic;
       
       -- Interface to Memory
       mem_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
       mem_addr : out   std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
-      mem_wr   : out   std_logic;
-      
-      -- Interface to ICache
-      icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      icache_addr : out   std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-      icache_wr   : out   std_logic;
-      
-      -- Interface to DCache
-      dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-      dcache_addr : out   std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-      dcache_wr   : out   std_logic
+      mem_wr   : out   std_logic
    );
 end top;
 
@@ -56,22 +47,13 @@ architecture Behavioral of top is
          bus_clk : in    std_logic;
          reset   : in    std_logic;
          
-         -- Interface to icache
-         icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         icache_addr : out    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-         icache_wr   : out    std_logic;
-         
-         -- Interface to dcache
-         dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         dcache_addr : out    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-         dcache_wr   : out    std_logic;
-         
          -- Interface to CPU
          data_in  : inout std_logic_vector(BUS_WIDTH-1 downto 0);
          addr_in  : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
          wr_in    : in    std_logic;
          done_out : out   std_logic;
          instr    : in    std_logic;
+         busy     : in    std_logic;
          
          -- Interface to Memory
          data_out : inout std_logic_vector(BUS_WIDTH-1 downto 0);
@@ -128,22 +110,13 @@ begin
          bus_clk => bus_clk,
          reset   => reset,
          
-         -- Interface to icache
-         icache_data => icache_data,
-         icache_addr => icache_addr,
-         icache_wr   => icache_wr,
-         
-         -- Interface to dcache
-         dcache_data => dcache_data,
-         dcache_addr => dcache_addr,
-         dcache_wr   => dcache_wr,
-         
          -- Interface to CPU
          data_in  => data,
          addr_in  => addr,
          wr_in    => wr,
          done_out => done,
          instr    => instr,
+         busy     => busy,
          
          -- Interface to Memory
          data_out => mem_cache_data,

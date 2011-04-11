@@ -15,7 +15,7 @@ package constants is
    constant CYCLE_TIME    : time := 10 ns; -- Rate of 100 MHz
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
    constant PROG_FILENAME : string := "code.hex"; -- Name of code to run.
-   constant NOCACHE       : std_logic := '1';
+   constant NOCACHE       : std_logic := '0';
    
    -- From CPU Requirments
    constant CPU_WIDTH          : integer := 32; -- 32 bit MIPS CPU
@@ -67,8 +67,8 @@ package constants is
    
    -- Infered attributes
    constant MEM_DEPTH    : integer := MEM_SIZE / MEM_ADDRESSABILITY;
-   constant ICACHE_DEPTH : integer := ICACHE_SIZE / MEM_ADDRESSABILITY;
-   constant DCACHE_DEPTH : integer := DCACHE_SIZE / MEM_ADDRESSABILITY;
+   constant ICACHE_DEPTH : integer := ICACHE_SIZE / WORD_SIZE; -- Word aligned
+   constant DCACHE_DEPTH : integer := DCACHE_SIZE / WORD_SIZE; -- Word aligned
    
    constant MEM_READ_TIME  : time := (MEM_PORT_READ_CYCLES + MEM_ADD_READ_CYCLES) * CYCLE_TIME;
    constant MEM_WRITE_TIME : time := (MEM_PORT_WRITE_CYCLES + MEM_ADD_WRITE_CYCLES) * CYCLE_TIME;
@@ -92,7 +92,7 @@ package body constants is
    function log2(A: integer) return integer is
    begin
       for I in 1 to 30 loop  -- Works for up to 32 bit integers
-         if(2**I > A) then 
+         if(2**I >= A) then 
             return(I);  
          end if;
       end loop;

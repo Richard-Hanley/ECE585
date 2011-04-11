@@ -66,10 +66,8 @@ architecture Behavioral of memory_ctl is
    -- Registers for the addr, data, and wr signals
    signal addr_reg : std_logic_vector(ADDR_WIDTH-1 downto 0);
    signal data_reg : std_logic_vector(BUS_WIDTH-1 downto 0);
-   signal wr_reg   : std_logic;
    
-   -- Counter signal and reset line.
-   signal cntr_rst : std_logic;
+   -- Counter signal
    constant CNTR_WIDTH : integer := log2(max4(RD_INIT_BUS_CYCLES, 
                                               WR_INIT_BUS_CYCLES, 
                                               RD_DATA_BUS_CYCLES, 
@@ -123,13 +121,13 @@ begin
       end if;
    end process;
    
-   NEXT_STATE_DECODE: process(clk, state, wr_in, data_in, addr_in, cntr)
+   NEXT_STATE_DECODE: process(clk, state, wr_in, data_in, addr_in, cntr, addr_reg, data_reg)
    begin
       next_state <= state;
       case (state) is
          when RD_INIT =>
             if wr_in = '0' then
-               if unsigned(cntr) > RD_INIT_BUS_CYCLES then
+               if cntr > RD_INIT_BUS_CYCLES then
                   next_state <= RD_READY;
                end if;
             else
