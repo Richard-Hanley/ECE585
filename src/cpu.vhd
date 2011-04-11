@@ -31,7 +31,8 @@ entity cpu is
       addr  : out   std_logic_vector(ADDR_WIDTH-1 downto 0);
       wr    : out   std_logic;
       done  : in    std_logic;
-      instr : out   std_logic
+      instr : out   std_logic;
+      busy  : out   std_logic
    );
 end cpu;
 
@@ -65,48 +66,56 @@ begin
 
    INSTR_EXEC: process 
    begin
-      data := (others => 'Z');
-      wr := '0';
-      addr := PC;
+      instr <= '1';
+      busy <= '1';
+      data <= (others => 'Z');
+      wr <= '0';
+      addr <= PC;
       wait for CYCLE_TIME;
       wait until done = '1';
-      IR := data;
+      busy <= '0';
+      IR <= data;
       wait for CYCLE_TIME;
+      instr <= '0';
       if    OPCODE = LW_OP then
-         addr := regs(conv_integer(RS)) + IMM; 
+         busy <= '1';
+         addr <= regs(conv_integer(RS)) + IMM; 
          wait for CYCLE_TIME; -- Give the done signal time to be reset.
          wait until done = '1';
-         regs(conv_integer(RT)) := data;
+         regs(conv_integer(RT)) <= data;
+         busy <= '0';
          report "Completed LW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = SW_OP then
-         wr := '1';
-         addr := IMM + regs(conv_integer(RS));
-         data := regs(conv_integer(RT));
+         busy <= '1';
+         wr <= '1';
+         addr <= IMM + regs(conv_integer(RS));
+         data <= regs(conv_integer(RT));
          wait for CYCLE_TIME; -- Give the done signal time to be reset
          wait until done = '1';
+         busy <= '0';
          report "Completed SW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = ALU_OP then
          if    FUNC = ADD_FUNC then
-            regs(conv_integer(RD)) := regs(conv_integer(RS)) + regs(conv_integer(RT));
+            regs(conv_integer(RD)) <= regs(conv_integer(RS)) + regs(conv_integer(RT));
             report "Completed ADD R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = AND_FUNC then
-            regs(conv_integer(RD)) := regs(conv_integer(RS)) and regs(conv_integer(RT));
+            regs(conv_integer(RD)) <= regs(conv_integer(RS)) and regs(conv_integer(RT));
             report "Completed AND R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = SLT_FUNC then
             if regs(conv_integer(RS)) < regs(conv_integer(RT)) then   
-               regs(conv_integer(RD)) := conv_std_logic_vector(1, BUS_WIDTH);
+               regs(conv_integer(RD)) <= conv_std_logic_vector(1, BUS_WIDTH);
             else
-               regs(conv_integer(RD)) := (others => '0');
+               regs(conv_integer(RD)) <= (others => '0');
             end if;
             report "Completed SLT R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = JR_FUNC then
-            PC := regs(conv_integer(RS)) - 4; -- 4 is incremented below.
+            PC <= regs(conv_integer(RS)) - 4; -- 4 is incremented below.
             report "Completed JR R" & integer'image(conv_integer(RS)) severity NOTE;
          elsif FUNC = SLL_FUNC then
-            regs(conv_integer(RD)) := to_stdlogicvector(to_bitvector(regs(conv_integer(RT))) sll conv_integer(SHAMT));
+            regs(conv_integer(RD)) <= to_stdlogicvector(to_bitvector(regs(conv_integer(RT))) sll conv_integer(SHAMT));
             report "Completed SLL R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(SHAMT)) severity NOTE;
          elsif FUNC = NOR_FUNC then
-            regs(conv_integer(RD)) := regs(conv_integer(RS)) nor regs(conv_integer(RT));
+            regs(conv_integer(RD)) <= regs(conv_integer(RS)) nor regs(conv_integer(RT));
             report "Completed NOR R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          else
             report "cpu.vhd: Unknown ALU function" severity ERROR;
@@ -114,18 +123,18 @@ begin
          end if;
       elsif OPCODE = BEQ_OP then
          if regs(conv_integer(RS)) = regs(conv_integer(RT)) then
-            PC := to_stdlogicvector(to_bitvector(IMM) sll 2) - 4; -- 4 is incremented below.
+            PC <= to_stdlogicvector(to_bitvector(IMM) sll 2) - 4; -- 4 is incremented below.
          end if;
          report "Completed BEQ R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       elsif OPCODE = J_OP then
-         PC := to_stdlogicvector(to_bitvector(ADDRESS) sll 2) - 4; 
+         PC <= to_stdlogicvector(to_bitvector(ADDRESS) sll 2) - 4; 
       elsif OPCODE = BNE_OP then
          if regs(conv_integer(RS)) /= regs(conv_integer(RT)) then
-            PC := to_stdlogicvector(to_bitvector(IMM) sll 2) - 4; -- 4 is incremented below.
+            PC <= to_stdlogicvector(to_bitvector(IMM) sll 2) - 4; -- 4 is incremented below.
          end if;
          report "Completed BNE R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(to_stdlogicvector(to_bitvector(IMM) sll 2))) severity NOTE;
       elsif OPCODE = LUI_OP then
-         regs(conv_integer(RT)) := to_stdlogicvector(to_bitvector(IMM) sll 16);
+         regs(conv_integer(RT)) <= to_stdlogicvector(to_bitvector(IMM) sll 16);
          report "Completed LUI R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       else
          report "cpu.vhd: Unknown OP Code" severity ERROR;
@@ -133,7 +142,7 @@ begin
       end if;
       
       wait for CYCLE_TIME;
-      PC := PC + 4; -- Increment program counter
+      PC <= PC + 4; -- Increment program counter
       wait for CYCLE_TIME;
    end process;
    

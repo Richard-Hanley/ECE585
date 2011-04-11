@@ -26,21 +26,13 @@ architecture behavior of t_top is
          addr     : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
          wr       : in    std_logic;
          done     : out   std_logic;
+         instr    : in    std_logic;
+         busy     : in    std_logic;
          
          -- Interface to Memory
          mem_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
          mem_addr : out   std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
-         mem_wr   : out   std_logic;
-         
-         -- Interface to ICache
-         icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         icache_addr : out   std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-         icache_wr   : out   std_logic;
-         
-         -- Interface to DCache
-         dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
-         dcache_addr : out   std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-         dcache_wr   : out   std_logic
+         mem_wr   : out   std_logic
       );
    end component;
     
@@ -53,7 +45,9 @@ architecture behavior of t_top is
          data  : inout std_logic_vector(BUS_WIDTH-1  downto 0);
          addr  : out   std_logic_vector(ADDR_WIDTH-1 downto 0);
          wr    : out   std_logic;
-         done  : in    std_logic
+         done  : in    std_logic;
+         instr : out   std_logic;
+         busy  : out   std_logic
       );
    end component;
    
@@ -79,12 +73,8 @@ architecture behavior of t_top is
    signal mem_data    : std_logic_vector(BUS_WIDTH-1 downto 0);
    signal mem_addr    : std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
    signal mem_wr      : std_logic;
-   signal icache_data : std_logic_vector(BUS_WIDTH-1 downto 0);
-   signal icache_addr : std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
-   signal icache_wr   : std_logic;
-   signal dcache_data : std_logic_vector(BUS_WIDTH-1 downto 0);
-   signal dcache_addr : std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
-   signal dcache_wr   : std_logic;
+   signal instr       : std_logic;
+   signal busy        : std_logic;
    
 begin
 
@@ -115,18 +105,12 @@ begin
          addr        => addr,
          wr          => wr,
          done        => done,
+         instr       => instr,
+         busy        => busy,
          -- Interface to Memory
          mem_data    => mem_data,
          mem_addr    => mem_addr,
-         mem_wr      => mem_wr,
-         -- Interface to ICache
-         icache_data => icache_data,
-         icache_addr => icache_addr,
-         icache_wr   => icache_wr,
-         -- Interface to DCache
-         dcache_data => dcache_data,
-         dcache_addr => dcache_addr,
-         dcache_wr   => dcache_wr
+         mem_wr      => mem_wr
       );
    
    cpu_inst: cpu
@@ -138,7 +122,9 @@ begin
          data  => data,
          addr  => addr,
          wr    => wr,
-         done  => done
+         done  => done,
+         instr => instr,
+         busy  => busy
       );
 
    mem: mem_elem
@@ -151,26 +137,6 @@ begin
          addr => mem_addr,
          wr   => mem_wr
       );       
-      
-   dcache: mem_elem
-      Generic map (
-         ELEM_DEPTH => DCACHE_DEPTH
-      )
-      Port map (
-         data => dcache_data,
-         addr => dcache_addr,
-         wr   => dcache_wr
-      );
-
-   icache: mem_elem
-      Generic map (
-         ELEM_DEPTH => ICACHE_DEPTH
-      )
-      Port map (
-         data => icache_data,
-         addr => icache_addr,
-         wr   => icache_wr
-      );
    
    -- Stimulus process
    stim_proc: process

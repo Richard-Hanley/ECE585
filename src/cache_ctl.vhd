@@ -19,22 +19,13 @@ entity cache_ctl is
       bus_clk : in    std_logic;
       reset   : in    std_logic;
       
---      -- Interface to icache
---      icache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
---      icache_addr : out    std_logic_vector(log2(ICACHE_DEPTH)-1 downto 0);
---      icache_wr   : out    std_logic;
---      
---      -- Interface to dcache
---      dcache_data : inout std_logic_vector(BUS_WIDTH-1 downto 0);
---      dcache_addr : out    std_logic_vector(log2(DCACHE_DEPTH)-1 downto 0);
---      dcache_wr   : out    std_logic;
-      
       -- Interface to CPU
       data_in  : inout std_logic_vector(BUS_WIDTH-1 downto 0);
       addr_in  : in    std_logic_vector(ADDR_WIDTH-1 downto 0);
       wr_in    : in    std_logic;
       done_out : out   std_logic;
       instr    : in    std_logic; -- If it is currently fetching an instruction.
+      busy     : in    std_logic;
       
       -- Interface to Memory
       data_out : inout std_logic_vector(BUS_WIDTH-1 downto 0);
@@ -45,165 +36,180 @@ entity cache_ctl is
 end cache_ctl;
 
 architecture Behavioral of cache_ctl is
-   constant ITAG_WIDTH   : integer := log2(MEM_DEPTH) - log2(ICACHE_DEPTH);
-   constant DTAG_WIDTH   : integer := log2(MEM_DEPTH) - log2(DCACHE_DEPTH);
-   constant IINDEX_WIDTH : integer := log2(ICACHE_DEPTH);
-   constant DINDEX_WIDTH : integer := log2(DCACHE_DEPTH);
-   constant IENTRY_WIDTH : integer := ITAG_WIDTH + 1;
-   constant DENTRY_WIDTH : integer := DTAG_WIDTH + 1 + 1;
-    
-   -- Add one to the tag width for the valid bit.  FYI: this is just the tag memory not the cache.
-   type itagmem_t is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(IENTRY_WIDTH - 1 downto 0);
-   type dtagmem_t is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(DENTRY_WIDTH - 1 downto 0);
-   type itags_t   is array(WORD_SIZE / BYTE_SIZE - 1 downto 0) of std_logic_vector(IENTRY_WIDTH-1 downto 0);
-   type dtags_t   is array(WORD_SIZE / BYTE_SIZE - 1 downto 0) of std_logic_vector(DENTRY_WIDTH-1 downto 0);
-
-   type idatamem_t is array(ICACHE_DEPTH-1 downto 0) of std_logic_vector(BYTE_SIZE-1 downto 0);
-   type ddatamem_t is array(DCACHE_DEPTH-1 downto 0) of std_logic_vector(BYTE_SIZE-1 downto 0);
-   
-   
-   
    type cachesm_t is ( IDLE,
                        IREAD,
                        DREAD);
-   
-   function clear_itags return itagmem_t is
-      variable tags : itagmem_t;
-   begin
-      for I in tags'range loop
-         tags(I) := (others => '0');
-      end loop;
-      return tags;
-   end function;
-   
-   function clear_dtags return dtagmem_t is
-      variable tags : dtagmem_t;
-   begin
-      for I in tags'range loop
-         tags(I) := (others => '0');
-      end loop;
-      return tags;
-   end function;
-   
-   signal ientries : itagmem_t := clear_itags;
-   signal dentries : dtagmem_t := clear_dtags;
-   signal icache   : idatamem_t;
-   signal dcache   : idatamem_t;
-   
-   signal cache_hit : std_logic;
-   
-   signal ientry : itags_t;
-   signal dentry : dtags_t;
-   
-   signal ivalid : std_logic;
-   signal dvalid : std_logic;
-   signal ddirty : std_logic;
-   signal icache_tag : std_logic;
-   signal dcache_tag : std_logic;
-   signal icache_hit : std_logic;
-   signal dcache_hit : std_logic;
-   
-   signal hit : std_logic;
-   signal cache_data : std_logic_vector(WORD_SIZE-1 downto 0);
-   
    signal state, next_state : cachesm_t := IDLE;
    
-   alias itag_in : std_logic_vector(ITAG_WIDTH-1 downto 0) is addr_in(log2(MEM_DEPTH) - 1 downto log2(MEM_DEPTH) - ITAG_WIDTH);  
-   alias dtag_in : std_logic_vector(DTAG_WIDTH-1 downto 0) is addr_in(log2(MEM_DEPTH) - 1 downto log2(MEM_DEPTH) - DTAG_WIDTH);
-   alias iindex_in : std_logic_vector(IINDEX_WIDTH-1 downto 0) is addr_in(IINDEX_WIDTH - 1 downto 0);
-   alias dindex_in : std_logic_vector(DINDEX_WIDTH-1 downto 0) is addr_in(DINDEX_WIDTH - 1 downto 0);   
+   component cache is
+   Generic (
+      CACHE_DEPTH : integer := ICACHE_DEPTH
+   );
+   Port (
+      clk      : in  std_logic;
+      bus_clk  : in  std_logic;
+      
+      -- Interface to CPU
+      addr_check : in  std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+      data_out   : out std_logic_vector(BUS_WIDTH-1 downto 0);
+      hit        : out std_logic;
+      
+      -- Inteface to fill SM
+      addr_fill  : in  std_logic_vector(log2(MEM_DEPTH)-1 downto 0);
+      data_in    : in  std_logic_vector(BUS_WIDTH-1 downto 0);
+      wr         : in  std_logic
+   );
+   end component;
    
+   -- Signals for Cache connections
+   signal idata, ddata : std_logic_vector(BUS_WIDTH-1 downto 0);
+   signal ihit, dhit   : std_logic;
+   signal iwr, dwr     : std_logic;
+   -- Signals for SM
+   signal filler_addr  : std_logic_vector(ADDR_WIDTH-1 downto 0);   
+   signal start_addr   : std_logic_vector(ADDR_WIDTH-1 downto 0);
+   signal cntr         : std_logic_vector(log2(BLOCK_SIZE/WORD_SIZE) downto 0);
+   signal smpause      : std_logic;
+
 begin
-
-   ientry <= ientries(conv_integer(iindex) + WORD_SIZE / BYTE_SIZE downto conv_integer(iindex));
-   dentry <= dentries(conv_integer(dindex) + WORD_SIZE / BYTE_SIZE downto conv_integer(dindex));
+   ICACHE: cache
+      Generic map (
+         CACHE_DEPTH => ICACHE_DEPTH
+      )
+      Port map (
+         clk        => clk,
+         bus_clk    => bus_clk,
+         -- Interface to CPU
+         addr_check => addr_in(log2(MEM_DEPTH)-1 downto 0),
+         data_out   => idata,
+         hit        => ihit,
+         -- Inteface to fill SM
+         addr_fill  => filler_addr(log2(MEM_DEPTH)-1 downto 0),
+         data_in    => data_out,
+         wr         => iwr
+      );
    
-   -- All of the valid bits must be set for the addr to be valid. TODO: Make this generic
-   ivalid <= ientry(0)(ITAG_WIDTH) and ientry(1)(ITAG_WIDTH) and 
-             ientry(2)(ITAG_WIDTH) and ientry(3)(ITAG_WIDTH);
-   dvalid <= dentry(0)(DTAG_WIDTH) and dentry(1)(DTAG_WIDTH) and 
-             dentry(2)(DTAG_WIDTH) and dentry(3)(DTAG_WIDTH);
-
-   -- If any of the dirty bits are set it's dirty TODO: Make this generic
-   ddirty <= dentry(0)(DTAG_WIDTH + 1) or dentry(1)(DTAG_WIDTH + 1) or 
-             dentry(2)(DTAG_WIDTH + 1) or dentry(3)(DTAG_WIDTH + 1);
-
-   -- If any of the tags are not correct then not a hit. TODO: Make it so this only uses a single N way comparator.
-   icache_tag <= '1' when itag_in = ientry(0)(ITAG_WIDTH-1 downto 0) and 
-                          itag_in = ientry(1)(ITAG_WIDTH-1 downto 0) and 
-                          itag_in = ientry(2)(ITAG_WIDTH-1 downto 0) and 
-                          itag_in = ientry(3)(ITAG_WIDTH-1 downto 0) else '0'; 
-   dcache_tag <= '1' when dtag_in = dentry(0)(DTAG_WIDTH-1 downto 0) and 
-                          dtag_in = dentry(1)(DTAG_WIDTH-1 downto 0) and 
-                          dtag_in = dentry(2)(DTAG_WIDTH-1 downto 0) and 
-                          dtag_in = dentry(3)(DTAG_WIDTH-1 downto 0) else '0';
+   DCACHE: cache
+      Generic map (
+         CACHE_DEPTH => DCACHE_DEPTH
+      )
+      Port map (
+         clk        => clk,
+         bus_clk    => bus_clk,
+         -- Interface to CPU
+         addr_check => addr_in(log2(MEM_DEPTH)-1 downto 0),
+         data_out   => ddata,
+         hit        => dhit,
+         -- Inteface to fill SM
+         addr_fill  => filler_addr(log2(MEM_DEPTH)-1 downto 0),
+         data_in    => data_out,
+         wr         => dwr
+      );
    
-   -- A hit occurs when the tag matches and the data is valid.
-   icache_hit <= icache_tag and ivalid;
-   dcache_hit <= dcache_tag and dvalid;
-   
-   -- Multiplex depending on instr or data access. TODO: Make this Generic.
-   cache_data <= icache(conv_integer(iindex) + 4 downto conv_integer(iindex)) 
-                 when instr = '1' 
-                 else dcache(conv_integer(dindex) + 4 downto conv_integer(dindex));
-                 
-   hit <= icache_hit when instr = '1' else dcache_hit;
-   
-   -- Bypass the cache if the data is not in cache;
-   addr_out <= cntr      when hit = '1' or wr_in = '1' else addr_in;
-   data_in <= cache_data when hit = '1'                else data_out;
-   done_out <= '1'       when hit = '1'                else done_in;
+   CACHE_MULTIPLEXER: process(data_in, busy, ihit, dhit, instr, wr_in, idata, filler_addr, ddata, data_out, done_in, addr_in)
+   begin
+      addr_out <= filler_addr;
+      data_out <= (others => 'Z');
+      data_in  <= (others => 'Z');
+      smpause <= '0';
+      --done_out <= '0';
+      if busy = '1' then
+         if instr = '1' and ihit = '1' and wr_in = '0' then -- We get a IHIT
+            data_in <= idata;
+            done_out <= '1';
+            report "cache_ctl.vhd: ICACHE_HIT" severity NOTE;
+         elsif instr = '0' and dhit = '1' and wr_in = '0' then -- We get a DHIT
+            data_in <= ddata;
+            done_out <= '1';
+            report "cache_ctl.vhd: DCACHE_HIT" severity NOTE;
+         else -- Miss
+            if wr_in = '1' then
+               data_out <= data_in;
+               data_in <= (others => 'Z');
+            else
+               data_in <= data_out;
+               data_out <= (others => 'Z');
+            end if;
+            addr_out <= addr_in;
+            done_out <= done_in;
+            smpause <= '1';
+            report "cache_ctl.vhd: CACHE MISS" severity NOTE;            
+         end if;
+      end if;
+   end process;
    
    -- Write through mode
    wr_out <= wr_in;
    
-   -- Cache statemachine
-   SYNC_PROC: process(clk, reset, next_state, cntr, addr_in, hit)
+   filler_addr <= start_addr + (cntr & "00");
+   
+   -- Cache statemachine with embedded counter
+   SYNC_PROC: process(bus_clk, reset, next_state, cntr, addr_in, smpause, done_in)
    begin
-      if rising_edge(clk) then
+      if rising_edge(bus_clk) then
          if reset = '1' then
             state <= IDLE;
-            cntr <= (others => '0');
-            start_address <= (others => '0');
+            start_addr <= (others => '0');
          else
             if state = IDLE and (next_state = IREAD or next_state = DREAD)  then
-               cntr <= addr_in;
-               start_address <= addr_in;
-            else
-               if done_in = '1' and hit = '1' then -- Essentially if we have a situation where this is going on in the background.
-                  cntr <= cntr + 4;
-               end if;
+               start_addr <= addr_in;
             end if;
             state <= next_state;
          end if;
       end if;
    end process;
    
-   OUTPUT_DECODE: process(state, next_state, cntr)
+   CNTR_PROC: process(bus_clk, done_in, smpause, cntr, state, next_state)
    begin
-      if state = IREAD then
-         icache(conv_integer(cntr(IINDEX-1 downto 0))) <= data_out when done_in = '1';
-      elsif state = DREAD then
-         dcache(conv_integer(cntr(DINDEX-1 downto 0))) <= data_out when done_in = '1';
+      if rising_edge(bus_clk) then
+         if reset = '1' or (state = IDLE and (next_state /= IDLE)) then
+            cntr <= (others => '0');
+         else
+            if smpause = '0' and done_in = '1' then
+               cntr <= cntr + 1;
+            else
+               cntr <= cntr;
+            end if;
+         end if;
       end if;
    end process;
    
-   NEXT_STATE_DECODE: process(clk, state, icache_hit, dcache_hit, instr)
+   OUTPUT_DECODE: process(state, done_in, smpause)
+   begin
+      iwr <= '0';
+      dwr <= '0';
+      case (state ) is
+         when IREAD =>
+            if smpause = '0' then
+               iwr <= done_in;
+            end if;
+         when DREAD =>
+            if smpause = '0' then
+               dwr <= done_in;
+            end if;
+         when others =>
+            
+      end case;
+  end process;
+   
+   NEXT_STATE_DECODE: process(state, ihit, dhit, instr, cntr)
    begin
       next_state <= state;
       case (state) is
          when IDLE =>
-            if icache_hit = '0' and instr = '1' then
+            -- If instr miss then put the block in ICACHE
+            -- If data  miss then put the block in DCACHE
+            if ihit = '0' and instr = '1' then
                next_state <= IREAD;
-            elsif dcache_hit = '0' and instr = '0' then
+            elsif dhit = '0' and instr = '0' then
                next_state <= DREAD;
             end if;
          when IREAD =>
-            if cntr > start_address + BLOCK_SIZE / BYTE_SIZE then
+            if cntr > BLOCK_SIZE / WORD_SIZE then
                next_state <= IDLE;
             end if; 
          when DREAD => 
-            if cntr > start_address + BLOCK_SIZE / BYTE_SIZE then
+            if cntr > BLOCK_SIZE / WORD_SIZE then
                next_state <= IDLE;
             end if;
          when others =>
