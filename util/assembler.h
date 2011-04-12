@@ -22,6 +22,7 @@
 #define J_OP   0x02
 #define BNE_OP 0x05
 #define LUI_OP 0x0F
+#define IMM_OP 0xFF
 #  define ADD_FUNC 0x20
 #  define AND_FUNC 0x24
 #  define SLT_FUNC 0x2A

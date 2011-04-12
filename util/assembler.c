@@ -126,7 +126,16 @@ unsigned int assemble(char* line)
 		assembly = ((LUI_OP << OPSTART) & OPMASK) | ((t << RTSTART) & RTMASK) | 
 		           ((imm << IMSTART) & IMMASK);
 	}
-	
+	else if(strcmp(opcode, "IMM") == 0)
+	{
+	   if(sscanf(line, "IMM R%i, %i;", &t, &imm) != 2)
+		{
+			perror("Bad IMM");
+			exit(EXIT_FAILURE);
+		}
+		assembly = ((IMM_OP << OPSTART) & OPMASK) | ((t << RTSTART) & RTMASK) | 
+		           ((imm << IMSTART) & IMMASK);
+	}
 	else if(strcmp(opcode, "NOR") == 0 )
 	{
 		if(sscanf(line, "NOR R%i, R%i, R%i;", &d, &s, &t) != 3)
