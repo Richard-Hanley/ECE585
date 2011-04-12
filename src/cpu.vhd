@@ -84,6 +84,7 @@ begin
          wait until done = '1' and rising_edge(clk);
          regs(conv_integer(RT)) <= data;
          busy <= '0';
+         report "R" & integer'image(conv_integer(RT)) & "<=" & integer'image(conv_integer(regs(conv_integer(RT)))) severity NOTE;
          report "Completed LW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = SW_OP then
          busy <= '1';
@@ -97,9 +98,11 @@ begin
       elsif OPCODE = ALU_OP then
          if    FUNC = ADD_FUNC then
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) + regs(conv_integer(RT));
+            report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed ADD R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = AND_FUNC then
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) and regs(conv_integer(RT));
+            report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed AND R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = SLT_FUNC then
             if regs(conv_integer(RS)) < regs(conv_integer(RT)) then   
@@ -107,15 +110,18 @@ begin
             else
                regs(conv_integer(RD)) <= (others => '0');
             end if;
+            report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed SLT R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          elsif FUNC = JR_FUNC then
             PC <= regs(conv_integer(RS)) - 4; -- 4 is incremented below.
             report "Completed JR R" & integer'image(conv_integer(RS)) severity NOTE;
          elsif FUNC = SLL_FUNC then
             regs(conv_integer(RD)) <= to_stdlogicvector(to_bitvector(regs(conv_integer(RT))) sll conv_integer(SHAMT));
+            report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed SLL R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(SHAMT)) severity NOTE;
          elsif FUNC = NOR_FUNC then
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) nor regs(conv_integer(RT));
+            report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed NOR R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
          else
             report "cpu.vhd: Unknown ALU function" severity ERROR;
@@ -123,21 +129,31 @@ begin
          end if;
       elsif OPCODE = BEQ_OP then
          if regs(conv_integer(RS)) = regs(conv_integer(RT)) then
-            PC <= PC + IMM & "00"; -- 4 is incremented below.
+            if IMM(15) = '0' then
+               PC <= PC + (IMM & "00"); -- 4 is incremented below.
+            else
+               PC <= PC - ((not IMM +1) & "00") ;
+            end if;
          end if;
          report "Completed BEQ R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       elsif OPCODE = J_OP then
-         PC <= to_stdlogicvector(to_bitvector(ADDRESS) sll 2) - 4; 
+         PC <= ("0000" & ADDRESS & "00") - 4; 
       elsif OPCODE = BNE_OP then
          if regs(conv_integer(RS)) /= regs(conv_integer(RT)) then
-               PC <= PC + IMM & "00";
+            if IMM(15) = '0' then
+               PC <= PC + (IMM & "00"); -- 4 is incremented below.
+            else
+               PC <= PC - ((not IMM +1) & "00") ; -- uhh this is 
+            end if;
          end if;
          report "Completed BNE R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(to_stdlogicvector(to_bitvector(IMM) sll 2))) severity NOTE;
       elsif OPCODE = LUI_OP then
-         regs(conv_integer(RT)) <= to_stdlogicvector(to_bitvector(IMM) sll 16);
+         regs(conv_integer(RT)) <= IMM & "0000000000000000";
+         report "R" & integer'image(conv_integer(RT)) & "<=" & integer'image(conv_integer(regs(conv_integer(RT)))) severity NOTE;
          report "Completed LUI R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
 		elsif OPCODE = IMM_OP then
-			regs(conv_integer(RT)) <= to_stdlogicvector(to_bitvector(IMM));
+			regs(conv_integer(RT)) <= "0000000000000000" & IMM;
+         report "R" & integer'image(conv_integer(RT)) & "<=" & integer'image(conv_integer(IMM)) severity NOTE;
          report "Completed IMM R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       else
          report "cpu.vhd: Unknown OP Code" severity ERROR;
