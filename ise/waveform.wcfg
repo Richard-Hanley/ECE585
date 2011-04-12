@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="/home/spenser/School/ECE585 - AdvCompArch/Project3/ise/t_top_isim_beh.wdb" id="1" type="auto">
+      <db_ref path="/home/spenser/Desktop/ECE585/ise/t_top_isim_beh1.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="constants" />
             <top_module name="numeric_std" />
@@ -16,7 +16,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="32" />
+   <WVObjectSize size="28" />
    <wvobject fp_name="/t_top/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -106,26 +106,6 @@
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="BkColor">128 128 255</obj_property>
       <obj_property name="TextColor">230 230 230</obj_property>
-   </wvobject>
-   <wvobject fp_name="/t_top/uut/gen_cache/C_CTL/data_in" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">data_in[31:0]</obj_property>
-      <obj_property name="ObjectShortName">data_in[31:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/t_top/uut/gen_cache/C_CTL/addr_in" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">addr_in[31:0]</obj_property>
-      <obj_property name="ObjectShortName">addr_in[31:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/t_top/uut/gen_cache/C_CTL/data_out" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">data_out[31:0]</obj_property>
-      <obj_property name="ObjectShortName">data_out[31:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/t_top/uut/gen_cache/C_CTL/addr_out" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">addr_out[31:0]</obj_property>
-      <obj_property name="ObjectShortName">addr_out[31:0]</obj_property>
-      <obj_property name="Radix">HEXRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/t_top/uut/gen_cache/C_CTL/state" type="other" db_ref_id="1">
       <obj_property name="ElementShortName">state</obj_property>
