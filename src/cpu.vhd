@@ -18,7 +18,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
-use IEEE.NUMERIC_STD.ALL;
+--use IEEE.NUMERIC_STD.ALL;
 use WORK.CONSTANTS.ALL;
 
 entity cpu is
@@ -123,14 +123,14 @@ begin
          end if;
       elsif OPCODE = BEQ_OP then
          if regs(conv_integer(RS)) = regs(conv_integer(RT)) then
-            PC <= to_stdlogicvector(to_bitvector(IMM) sll 2) - 4; -- 4 is incremented below.
+            PC <= PC + IMM & "00"; -- 4 is incremented below.
          end if;
          report "Completed BEQ R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       elsif OPCODE = J_OP then
          PC <= to_stdlogicvector(to_bitvector(ADDRESS) sll 2) - 4; 
       elsif OPCODE = BNE_OP then
          if regs(conv_integer(RS)) /= regs(conv_integer(RT)) then
-            PC <= to_stdlogicvector(to_bitvector(IMM) sll 2) - 4; -- 4 is incremented below.
+               PC <= PC + IMM & "00";
          end if;
          report "Completed BNE R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(to_stdlogicvector(to_bitvector(IMM) sll 2))) severity NOTE;
       elsif OPCODE = LUI_OP then
