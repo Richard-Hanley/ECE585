@@ -126,14 +126,16 @@ begin
             if wr_in = '1' then
                data_out <= data_in;
                data_in <= (others => 'Z');
+               report "cache_ctl.vhd: Write passthrough" severity NOTE;
             else
                data_in <= data_out;
                data_out <= (others => 'Z');
+               report "cache_ctl.vhd: CACHE MISS" severity NOTE; 
             end if;
             addr_out <= addr_in;
             done_out <= done_in;
             smpause <= '1';
-            report "cache_ctl.vhd: CACHE MISS" severity NOTE;            
+                       
          end if;
       end if;
    end process;

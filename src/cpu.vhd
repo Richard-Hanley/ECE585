@@ -72,7 +72,7 @@ begin
       wr <= '0';
       addr <= PC;
       wait for CYCLE_TIME;
-      wait until done = '1';
+      wait until done = '1' and rising_edge(clk);
       busy <= '0';
       IR <= data;
       wait for CYCLE_TIME;
@@ -81,7 +81,7 @@ begin
          busy <= '1';
          addr <= regs(conv_integer(RS)) + IMM; 
          wait for CYCLE_TIME; -- Give the done signal time to be reset.
-         wait until done = '1';
+         wait until done = '1' and rising_edge(clk);
          regs(conv_integer(RT)) <= data;
          busy <= '0';
          report "Completed LW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
@@ -91,7 +91,7 @@ begin
          addr <= IMM + regs(conv_integer(RS));
          data <= regs(conv_integer(RT));
          wait for CYCLE_TIME; -- Give the done signal time to be reset
-         wait until done = '1';
+         wait until done = '1' and rising_edge(clk);
          busy <= '0';
          report "Completed SW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = ALU_OP then

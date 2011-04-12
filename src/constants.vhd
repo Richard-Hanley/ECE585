@@ -12,7 +12,7 @@ use IEEE.STD_LOGIC_1164.all;
 package constants is
    -- My Constants
    constant START_ADDR    : std_logic_vector(31 downto 0) := (others => '0');
-   constant CYCLE_TIME    : time := 10 ns; -- Rate of 100 MHz
+   constant CYCLE_TIME    : time := 32 ns; -- Must be divisible by bus rate.
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
    constant PROG_FILENAME : string := "code.hex"; -- Name of code to run.
    constant NOCACHE       : std_logic := '0';
