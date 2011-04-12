@@ -136,6 +136,9 @@ begin
       elsif OPCODE = LUI_OP then
          regs(conv_integer(RT)) <= to_stdlogicvector(to_bitvector(IMM) sll 16);
          report "Completed LUI R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
+		elsif OPCODE = IMM_OP then
+			regs(conv_integer(RT)) <= to_stdlogicvector(to_bitvector(IMM));
+         report "Completed IMM R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
       else
          report "cpu.vhd: Unknown OP Code" severity ERROR;
          wait; -- Kill the simulation on a bad instruction.

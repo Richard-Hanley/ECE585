@@ -15,7 +15,7 @@ package constants is
    constant CYCLE_TIME    : time := 32 ns; -- Must be divisible by bus rate.
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
    constant PROG_FILENAME : string := "code.hex"; -- Name of code to run.
-   constant NOCACHE       : std_logic := '0';
+   constant NOCACHE       : std_logic := '1';
    
    -- From CPU Requirments
    constant CPU_WIDTH          : integer := 32; -- 32 bit MIPS CPU
@@ -32,15 +32,16 @@ package constants is
       constant AND_FUNC : std_logic_vector(5 downto 0) := "100100";
       constant SLT_FUNC : std_logic_vector(5 downto 0) := "101010";
       constant SLL_FUNC : std_logic_vector(5 downto 0) := "000000";
-      constant NOR_FUNC : std_logic_vector(5 downto 0) := "100111"; -- From http://www.cs.umd.edu/class/spring2003/cmsc311/Notes/Mips/bitwise.html
+      constant JR_FUNC  : std_logic_vector(5 downto 0) := "001000"; -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
+   constant NOR_FUNC : std_logic_vector(5 downto 0) := "100111"; -- From http://www.cs.umd.edu/class/spring2003/cmsc311/Notes/Mips/bitwise.html
    constant BEQ_OP : std_logic_vector(31 downto 26) := "000100";
    constant J_OP   : std_logic_vector(31 downto 26) := "000010";
    
    -- Additional OPs based on ID Number A20254941
    constant BNE_OP : std_logic_vector(31 downto 26) := "000101";    -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
    constant LUI_OP : std_logic_vector(31 downto 26) := "001111";    -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
-      constant JR_FUNC  : std_logic_vector(5 downto 0) := "001000"; -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
-   
+	constant IMM_OP : std_logic_vector(31 downto 26) := "111111";    -- designed to load a vaue directly into registers
+      
    -- From Bus Requirements
    constant BUS_BW : integer := 32;
    
