@@ -24,7 +24,7 @@ if __name__ == "__main__":
     for i in range(runs):
         iter_data = getrandbits(32), getrandbits(32)
         data.append(map(to_string, iter_data))
-        [test.append(elem) for elem in asm_iter(iter_data)]
+        [test.append(elem) for elem in map(asm_iter, iter_data)]
 
     with open(data_file, 'w') as handle:
         for R5,R6 in data:
