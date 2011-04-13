@@ -93,6 +93,7 @@ begin
          data <= regs(conv_integer(RT));
          wait for CYCLE_TIME; -- Give the done signal time to be reset
          wait until done = '1' and rising_edge(clk);
+         wr <= '0';
          busy <= '0';
          report "Completed SW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = ALU_OP then
@@ -130,9 +131,9 @@ begin
       elsif OPCODE = BEQ_OP then
          if regs(conv_integer(RS)) = regs(conv_integer(RT)) then
             if IMM(15) = '0' then
-               PC <= PC + (IMM & "00"); -- 4 is incremented below.
+               PC <= PC + (IMM & "00"); 
             else
-               PC <= PC - ((not IMM +1) & "00") ;
+               PC <= PC - ((not IMM +1) & "00") ; -- Kinda hacky but two's complement subtraction.
             end if;
          end if;
          report "Completed BEQ R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
@@ -141,9 +142,9 @@ begin
       elsif OPCODE = BNE_OP then
          if regs(conv_integer(RS)) /= regs(conv_integer(RT)) then
             if IMM(15) = '0' then
-               PC <= PC + (IMM & "00"); -- 4 is incremented below.
+               PC <= PC + (IMM & "00");
             else
-               PC <= PC - ((not IMM +1) & "00") ; -- uhh this is 
+               PC <= PC - ((not IMM + 1) & "00") ; -- Kinda hacky but two's complement subtraction.
             end if;
          end if;
          report "Completed BNE R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(to_stdlogicvector(to_bitvector(IMM) sll 2))) severity NOTE;

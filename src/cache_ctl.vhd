@@ -70,7 +70,7 @@ architecture Behavioral of cache_ctl is
    signal start_addr   : std_logic_vector(ADDR_WIDTH-1 downto 0);
    signal cntr         : std_logic_vector(log2(BLOCK_SIZE/WORD_SIZE) downto 0);
    signal smpause      : std_logic;
-
+   signal cntr_reset   : std_logic;
 begin
    ICACHE: cache
       Generic map (
@@ -146,28 +146,28 @@ begin
    filler_addr <= start_addr + (cntr & "00");
    
    -- Cache statemachine with embedded counter
-   SYNC_PROC: process(bus_clk, reset, next_state, cntr, addr_in, smpause, done_in)
+   SYNC_PROC: process(clk, reset, next_state, cntr, addr_in, smpause, done_in)
    begin
-      if rising_edge(bus_clk) then
+      if rising_edge(clk) then
          if reset = '1' then
             state <= IDLE;
             start_addr <= (others => '0');
          else
-            if state = IDLE and (next_state = IREAD or next_state = DREAD)  then
-               start_addr <= addr_in;
+            if cntr_reset = '1'  then
+               start_addr <= addr_in(31 downto 4) & "0000"; -- Only do this on block boundries.
             end if;
             state <= next_state;
          end if;
       end if;
    end process;
    
-   CNTR_PROC: process(bus_clk, done_in, smpause, cntr, state, next_state)
+   CNTR_PROC: process(clk, done_in, smpause, cntr, state, next_state)
    begin
-      if rising_edge(bus_clk) then
-         if reset = '1' or (state = IDLE and (next_state /= IDLE)) then
+      if rising_edge(clk) then
+         if reset = '1' or cntr_reset = '1' then
             cntr <= (others => '0');
          else
-            if smpause = '0' and done_in = '1' then
+            if smpause = '0' and done_in = '1'  and cntr < BLOCK_SIZE / WORD_SIZE  then
                cntr <= cntr + 1;
             else
                cntr <= cntr;
@@ -180,6 +180,7 @@ begin
    begin
       iwr <= '0';
       dwr <= '0';
+      cntr_reset <= '0';
       case (state ) is
          when IREAD =>
             if smpause = '0' then
@@ -190,7 +191,7 @@ begin
                dwr <= done_in;
             end if;
          when others =>
-            
+            cntr_reset <= '1';
       end case;
   end process;
    
@@ -207,11 +208,11 @@ begin
                next_state <= DREAD;
             end if;
          when IREAD =>
-            if cntr > BLOCK_SIZE / WORD_SIZE then
+            if cntr = BLOCK_SIZE / WORD_SIZE then
                next_state <= IDLE;
             end if; 
          when DREAD => 
-            if cntr > BLOCK_SIZE / WORD_SIZE then
+            if cntr = BLOCK_SIZE / WORD_SIZE then
                next_state <= IDLE;
             end if;
          when others =>

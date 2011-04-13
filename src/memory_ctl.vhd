@@ -112,17 +112,9 @@ begin
       end if;
    end process;
    
-   -- done state machine see appendix A.1 of report.
-   OUTPUT_DECODE: process(state, next_state)
-   begin
-      done_out <= '0';
-      if state = RD_DONE or state = WR_DONE then
-         done_out <= '1';
-      end if;
-   end process;
-   
    NEXT_STATE_DECODE: process(clk, state, wr_in, data_in, addr_in, cntr, addr_reg, data_reg)
    begin
+      done_out <= '0';
       next_state <= state;
       case (state) is
          when RD_INIT =>
@@ -156,8 +148,10 @@ begin
             end if;
          when RD_DONE =>
             if wr_in = '0' then
+               done_out <= '1';
                if addr_in /= addr_reg then 
                   next_state <= RD_READY;
+                  done_out <= '0';
                end if;
             else
                next_state <= WR_INIT;
@@ -193,8 +187,10 @@ begin
             end if;
          when WR_DONE  =>
             if wr_in = '1' then 
+               done_out <= '1';
                if addr_in /= addr_reg or data_in /= data_reg then
                   next_state <= WR_READY;
+                  done_out <= '0';
                end if;
             else
                next_state <= RD_INIT;
