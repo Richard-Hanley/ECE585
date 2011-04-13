@@ -22,9 +22,10 @@ if __name__ == "__main__":
     data = []
     test = []
     for i in range(runs):
-        iter_data = getrandbits(32), getrandbits(32)
+        iter_data = getrandbits(31), getrandbits(31)
         data.append(map(to_string, iter_data))
-        [test.append(elem) for elem in map(asm_iter, iter_data)]
+        for elem in asm_iter(iter_data):
+            test.append(elem) 
 
     with open(data_file, 'w') as handle:
         for R5,R6 in data:
@@ -32,6 +33,7 @@ if __name__ == "__main__":
             handle.write('\n')
             handle.write(R6)
             handle.write('\n')
+        handle.close()
 
     with open(test_file, 'w') as handle:
         for R5,R6 in data:
@@ -42,7 +44,5 @@ if __name__ == "__main__":
         for elem in test:
             handle.write(elem)
             handle.write('\n')
-
-
-
-    
+        handle.close() 
+        
