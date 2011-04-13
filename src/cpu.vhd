@@ -124,6 +124,11 @@ begin
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) nor regs(conv_integer(RT));
             report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed NOR R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
+         elsif FUNC = STATS_FUNC then
+            regs(conv_integer(RD)) <= conv_std_logic_vector(CLK_CNTR, BUS_WIDTH);
+            regs(conv_integer(RT)) <= conv_std_logic_vector(ICACHE_HITS, BUS_WIDTH);
+            regs(conv_integer(RS)) <= conv_std_logic_vector(DCACHE_HITS, BUS_WIDTH);
+            report "Stats: CLK_CYCLES = " & integer'image(CLK_CNTR) & " IHc = " & integer'image(ICACHE_HITS) & " DHc = " & integer'image(DCACHE_HITS) severity NOTE;
          else
             report "cpu.vhd: Unknown ALU function" severity ERROR;
             wait; -- Kill the simulation on a bad instruction

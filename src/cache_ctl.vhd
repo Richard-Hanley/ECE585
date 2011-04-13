@@ -68,7 +68,7 @@ architecture Behavioral of cache_ctl is
    -- Signals for SM
    signal filler_addr  : std_logic_vector(ADDR_WIDTH-1 downto 0);   
    signal start_addr   : std_logic_vector(ADDR_WIDTH-1 downto 0);
-   signal cntr         : std_logic_vector(log2(BLOCK_SIZE/WORD_SIZE) downto 0);
+   signal cntr         : std_logic_vector(log2(BLOCK_SIZE/WORD_SIZE) downto 0); -- Plus one to make sure we can get to the actual value. 
    signal smpause      : std_logic;
    signal cntr_reset   : std_logic;
 begin
@@ -105,6 +105,24 @@ begin
          data_in    => data_out,
          wr         => dwr
       );
+      
+   -- synthesis translate_off
+   METRICS_COUNTER: process(instr, ihit, dhit, wr_in)
+   begin
+      if rising_edge(ihit) or rising_edge(dhit) then
+         if ihit = '1' and instr = '1' and wr_in = '0' then
+            ICACHE_HITS := ICACHE_HITS + 1;
+         end if;
+         if dhit = '1' and instr = '0' and wr_in = '0' then
+            DCACHE_HITS := DCACHE_HITS + 1;
+         end if;
+      end if;
+      
+      if rising_edge(clk) then
+         CLK_CNTR := CLK_CNTR + 1;
+      end if;
+   end process;
+   -- synthesis translate_on
    
    CACHE_MULTIPLEXER: process(data_in, busy, ihit, dhit, instr, wr_in, idata, filler_addr, ddata, data_out, done_in, addr_in)
    begin
@@ -134,8 +152,7 @@ begin
             end if;
             addr_out <= addr_in;
             done_out <= done_in;
-            smpause <= '1';
-                       
+            smpause <= '1';       
          end if;
       end if;
    end process;
