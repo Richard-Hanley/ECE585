@@ -63,7 +63,7 @@ architecture Behavioral of cpu is
    alias ADDRESS : std_logic_vector(25 downto 0)  is IR(25 downto 0);
    
 begin
-
+   
    INSTR_EXEC: process 
    begin
       instr <= '1';

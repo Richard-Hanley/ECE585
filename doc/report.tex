@@ -33,589 +33,83 @@ This report depicts the design process as well as simulation results of a memory
 This project presented an interesting opportunity to verify and evaluate the effectiveness of cache schemes on the performance of a computer program.  The programs that were evaluated were designed to find both worse case and best case performance as well as to show the effect of the locality of memory on the overall effectiveness of the processor. In addtion, the design and implementation of various memory hierarchy elements are shown.
 
 \section{ Background }
+\paragraph{}
+In common processor based systems, it is highly likely that recently accessed data or instructions will be accessed again in the immediate future.  This is known as the data locality principle.  Memory hierarchies attempt to take advantage of expensive fast memories to hold this consistantly accessed data and slow cheap memories to hold the remaining data.  This results in a higher performance memory subsytem than raw access to the slow memory would normal entail.  This idea of including the commonly accessed instructions or data in a fast memory is called caching.
+
+For the system at hand, there are a total of three memory elements arranged in the following memory hierarchy.
+
+% nice beautiful picture.
 
 \paragraph{Register File}
+The register file is located inside the CPU.  It holds the registers that store the data.  The register file is the eventual location of all elements in memory and all of the data must go into the register file to be processed.  
 
-\paragraph{Memory}
-In order to understand how a memory hierarchy works, one must first understand how memory works.  In the large percentage of memory elements the access time of the memory element is much larger than the access time of local registers.  This is in order to reduce the costs of the external memory elements.  The memory elements are usually controlled by a memory controller which enforces the constraints on the memory elements and allows a user to use them using the basic address, wr, and data lines
+\paragraph{I-Cache \& D-Cache}
+The I-Cache and D-Cache hold instructions and data, respectively.  These are expensive but very fast memories which have single cycle access.
 
-\paragraph{Cache}
+\paragraph{Main Memory}
+The main memory is the slowest memory but also the largest and cheapest.  It is used to store less frequently accessed data and is the initial location where a program is loaded.  The memory has a six cycle access time for reads and a four cycle access time for writes. 
 
-
-
-In a memory hierarchy there is three components: the memory, the bus, and the cache
-
-
-Both the eight bit CPU and the 32-bit CPU have the same basic design and instruction set. The purpose of a CPU is to implement a set of
-instructions and provide a mechanism to execute a series of instructions. 
-The process by which a processor executes instructions is called the fetch and
-execute cycle.  This simply means that the processor executes an
-instruction and then based on that instruction fetches the next instruction. 
-This CPU has the following instruction set: \cite{instructions}
-
-\begin{center} 
-\begin{small}
-\begin{tabular}{ | c | c | c | } 
-\hline ASM Code      & Machine Code                             & Comments      
-      \\
-\hline sll @s @a @b  & \verb|0000 addr_s[3:0] addr_a[3:0] addr_b[3:0]| &
-\verb|@s=@a<<@b[5:0]       |\\ 
-\hline srl @s @a @b  & \verb|0001 addr_s[3:0] addr_a[3:0] addr_b[3:0]| &
-\verb|@s=@a>>@b[5:0]       |\\ 
-\hline add @s @a @b  & \verb|0010 addr_s[3:0] addr_a[3:0] addr_b[3:0]| &
-\verb|@s=@a+@b             |\\ 
-\hline sub @s @a @b  & \verb|0011 addr_s[3:0] addr_a[3:0] addr_b[3:0]| &
-\verb|@s=@a-@b             |\\ 
-\hline and @s @a @b  & \verb|0100 addr_s[3:0] addr_a[3:0] addr_b[3:0]| &
-\verb|@s=@a&@b             |\\ 
-\hline xnor @s @a @b & \verb|0101 addr_s[3:0] addr_a[3:0] addr_b[3:0]| &
-\verb|@s=~(@a^@b)          |\\ 
-\hline loadi @s, imm & \verb|1010 addr_s[3:0] imm[7:0]               | &
-\verb|@s=imm               |\\ 
-\hline jz @a, bpc    & \verb|1000 bpc[7:4] addr_a[3:0] bpc[3:0]      | &
-\verb|jump to bpc if @a==0 |\\ 
-\hline jnz @a, bpc   & \verb|1001 bpc[7:4] addr_a[3:0] bpc[3:0]      | &
-\verb|jump to bpc if @a!=0 |\\ 
-\hline stop          & \verb|1111 xxxx xxxx xxxx                     | &
-\verb|stop the program     |\\ 
-\hline
-\end{tabular}
-\end{small}
-\end{center}
+\section{ Design Considerations }
 \paragraph{}
+The design of the memory hierarchy is described by the project directions.  The memory should hold 2048 bytes, the I-Cache should hold 512 bytes and the D-Cache should hold 256 bytes and both the I-Cache and D-Cache should be implemented as direct mapped caches.  Additionally, the requirements specified that a cache should be implemented which uses a write-thru strategy with a no-write allocate miss strategy.  This essentially dictates that the cache should operate in a bypass mode when a miss or a write is occuring. 
 
-During development, two programs were created.  One program
-computes the product of 254941 (partial ID number) and 4111.  The other computes
-the integer quotient and remainder of $ 12 / 5 $.  These programs are
-implemented in assembly code and then assembled to machine code by the assembler
-in appendix \ref{assembler.c}.
+A look through design was choosen because it allows the bus and processor to operate at completely different speeds.  Additionally, certain signals such as busy, and instr are not needed at the memory controller but are required for operation of the cache.  
 
-In order to implement the instructions listed above, the system presented in
-figure 
-\ref{fig:overview} was developed.  There are four main units to this design: 
-the Memories, the Program Counter, the ALU, and the Control Logic.  The section
-outlined in the CPU box of figure \ref{fig:overview} is the portion of this circuit that will be implemented 
-in silicon, and the section outlined in the stimulus box of figure \ref{fig:overview} is the test harness.
-  
-\begin{figure}[ht]
-  \centering
-  %\includegraphics[width=4in]{overview}
-  \caption{An eight bit CPU with test bench \cite{instructions}}
-  \label{fig:overview}
-\end{figure}
-
-
-\pagebreak{}
-\paragraph{ Memory }
-This design implements a Harvard architecture \cite{wpedia:harvardarch}.  In a
-Harvard architecture, the system has two main memories.  One memory holds
-the instructions to execute, and the other holds the data. In our
-case, the external ROM is the instruction memory, and the internal RAM is the
-data memory.  
-
-The internal RAM is a dual-port ram with two read interfaces and one write
-interface.  As an address enters the ram, it is decoded from binary encoding to
-one hot encoding.  This one hot encoded address controls a tristate which acts
-like a multiplexer between all of the lines of memory.  The memory itself is 16 lines wide with 32 flip flops for line per line (eight flip flops per
-line in the case of the eight bit CPU.) When the address of the needed memory
-line is present, the data port will present the value at that address of memory.
-
-The number of lines in the memory stays the same between the eight bit and 32-bit CPU in order to maintain backward compatibility with the instruction set.  The instruction set only allows addresses of five bits.  Therefore, the maximum number of memory lines is $2^5 = 16$.
-
-\paragraph{ Program Counter }
-In all CPU designs, there exists a need for a functional unit that determines the
-instruction which should be executed during a given clock cycle. The program counter
-is a specialized accumulator that implements this functionality.  The program counter
-usually increments at each rising edge of the clock, thereby executing the
-next instruction in the program.  However if the instruction happens to be a jump
-instruction such as ``jz``, or ``jnz`` then, the address in the ''bpc'' portion
-of this instruction is conditionally loaded into the counter given that the data
-in address A (from the instruction documentation) is equal to zero or
-not equal to zero, respectively.  Additionally, the ''stop'' instruction is a special instruction
-which stops the program counter from incrementing.
-\paragraph{ ALU }
-An arithmetic logic unit or ALU is a computing element that performs the
-various mathematical operations in a CPU.  Specifically, this ALU implements the
-``add``, ``sub``, ``sll``, ``srl'', ''and'', and ''xnor`` operations.  These
-operations take the value of two memory addresses and compute a result which is
-present at the output of the ALU.  
-
-The ALU is constantly computing the results of each of these operations, and a
-multiplexer is used to choose which answer should be propagated to the output. 
-The multiplexer is controlled by the three least significant bits of the instruction
-code. Because of the similarities between subtraction and addition, the design
-uses a single adder for both addition and subtraction.  This is accomplished by
-including a \verb|sub| signal which inverts the value in \verb|port b|, and sets the carry in
-bit of the adder high when the least significant bit of the instruction code is
-high.  The remaining operations are each implemented with a single possible
-address and directly compute the needed result.
-
-\paragraph{ Control Logic }
-The control logic is a block of combinational logic that decodes the
-instruction and sends the needed information to each of the other components in
-the system.  This is done through a combination of basic gates.
-
-\section{ 32-bit CPU Implementation }
+\section{ Implementation }
 \paragraph{}
-In this project, an eight-bit CPU is transformed into a 32-bit CPU. This new CPU
-shares the same instruction set as the eight-bit CPU but allows the user to 
-perform operations on 32-bit data.  Therefore, this CPU just extends the data 
-path of the CPU to 32 bits wide.
+The implementation of the system was created in VHDL.  The VHDL can be split into two parts the \verb|top.vhd| includes all the syntheizable VHDL components and the \verb|t_top.vhd| includes simulation only components.  This split between syntheizable and simulation VHDL provides flexibility to rapidly test and verify the circuit before realization in an FPGA or ASIC. 
 
-The data path consists of the ALU, Data Memory, and some extraneous logic.  The 
-process of extending the data path is fairly simple, consisting of solely 
-adjusting the size of each of these elements.  There is a distinct pattern that 
-arises when enlarging the data path. 
+The syntheisable portion of the design includes a cache controller which is defined in \verb|cache_ctl.vhd|, a cache element implementation which is defined in \verb|cache.vhd|, and a memory controller which is defined in \verb|memory_ctl.vhd|.  The cache controller is designed to be as simple and transparent as possible.  The three main portions of its implementation are the cache elements, the combinational logic, and the filler state machine.  The combinational logic acts like a multiplexer which allows memory accesses to be directed at either the I-Cache, D-Cache or the Main Memory.  The filler state machine is a finite state machine which fills the I-Cache and D-Cache when the memory bus is not in use by the processor.  The cache elements are the main elements of the system.  They take a check address which can be decomposed into a tag and index portion the index portion is sent to the memory element and the tag portion is compared against the tag in the memory element to determine if a cache hit has occured.  The data is then placed on the bus given that a cache hit has occured.  The memory controller is another element designed which enforces the timing requirements presented in the project requirements.  
 
-The pattern is to increase the number of elements and the width of the input/output 
-ports. An example is below.
-\lstset{language=verilog, breaklines=true, basicstyle=\scriptsize, escapeinside={\%*}{*)}}
-\begin{center}
-\begin{lstlisting}
-//module dff_8(d, clk, q); %* \begin{footnotesize} \textbf{[1]} \end{footnotesize} *)
-module dff_32(d, clk, q);
-   //output [31:0] q;   %* \begin{footnotesize} \textbf{[1]} \end{footnotesize} *)
-   output [31:0] q;
-   //input [31:0]  d;   %* \begin{footnotesize} \textbf{[1]} \end{footnotesize} *)
-   input [31:0]  d;
-   input 	 clk;	
-   
-   dff d0(d[0], clk, q[0]);
-   dff d1(d[1], clk, q[1]);
-   %* $ \quad \quad \quad \vdots $ *) %* \begin{footnotesize} \textbf{[2]} \end{footnotesize} *) 
-   dff d30(d[30], clk, q[30]);
-   dff d31(d[31], clk, q[31]);
-endmodule // dff_32
-\end{lstlisting}
-\end{center}
-
-In the above code example, the \verb|dff_8| is transformed into a \verb|dff_32|
-by:
-\begin{enumerate}
-  \item Increasing the width of the input and output ports.
-  \item Quadrupling the number of D flip flops.
-\end{enumerate}
-
-This transform is used throughout the code as a way to make a 32-bit item out of
-an eight-bit item.  
-
-There is only one exception to this rule.  In the \verb|shift_left_logic_32| module and 
-\verb|shift_right_logic_32| module, the change needed is using the five least significant 
-bits of the operand instead of only the three least significant bits.  This 
-is because $ \log_{2}(32) = 5 $, and therefore, it takes only the five least significant
-bits of the operand to express the maximum shift.
-
-\section{ Architectural Exploration of Adders }
-\label{Adders}
-\paragraph{}
-As mentioned in the introduction,  the carry chain of the carry ripple adder was 
-the performance bottleneck of the initial eight-bit design and it will only be 
-exacerbated in the 32-bit design.  This is a common problem in the design of 
-adders; therefore, several designs have been created which reduce this 
-performance bottleneck.  
-
-In this exercise, a valency four carry select adder is instantiated in place of the 
-original carry ripple adder.  The carry select adder is a type of adder that 
-pre-computes the carry out for the case of either a carry in or no carry 
-in.  It multiplexes the result using the actual carry in for the select of the 
-multiplexer (see figure \ref{fig:carry_select}.)  
-
-\begin{figure}[ht]
-  \centering
-  %\includegraphics[width=6in]{carry_select_adder}
-  \caption{Carry select adder from \cite{cmosvlsi}}
-  \label{fig:carry_select}
-\end{figure}
-
-The carry select has an ideal delay of 
-\begin{align}
-t_{select} = t_{pg} + [ n + (k-2)] t_{A0} + t_{mux}
-\end{align}
-and a carry ripple adder as an ideal delay of 
-\begin{align}
-t_{ripple} = t_{pg} + (N-1) t_{A0} + t_{xor} .
-\end{align}
-subtracting these two equations it is found that the delay of a carry select 
-adder in comparison to the carry ripple adder is
-\begin{align}
-t_{select} - t_{ripple} = ([ n + (k-2)] - (N-1))  t_{A0} + t_{mux} - t_{xor}
-\end{align}
-for our design this simplifies to 
-\begin{align}
-t_{select} - t_{ripple} &= ([8 + (4-2)] - (32-1)) t_{A0} + t_{mux} - t_{xor} \\
-t_{select} - t_{ripple} &= -21 t_{A0} + t_{mux} - t_{xor}
-\end{align}
-Given that $ t_{mux} = t_{xor} $ \footnote{note neccessarily true but an okay approximation}, 
-this indicates that the carry select adder is ideally faster by 21 single bit carry 
-delays or an maximum decrease in delay of approximately $ 21 / 31 \approx 68\% $ \footnote{compute by ignore the effects of $ t_{pg} $, $ t_{mux} $, and $ t_{xor} $}.
-
-The actual implementation results are listed in appendix \ref{s1/timing.rep} and 
-appendix \ref{s2/timing.rep}.  From these results, the maximum frequency for the 
-carry ripple adder is
-\begin{align}
-\frac{1000}{librarysetuptime + dataarrivaltime} = \frac{1000}{.36 + 17.57} = 55 MHz.
-\end{align}
-Additionally, the maximum frequency for the carry select adder is 
-\begin{align}
-\frac{1000}{librarysetuptime + dataarrivaltime} = \frac{1000}{.36 + 10.97} = 88 MHz.
-\end{align}
-Because $dataarrivaltime$ is made up of both the propagation delay through the 
-carry ripple chain and the delay through the memory system, it is only an 
-approximation to $t_{select}$ and $t_{ripple}$.  But using these numbers, the carry 
-select adder decreases the critical path delay by $ 10.97 / 17.57  = 61\% $.
-
-Despite these advancements, the critical path is still the path through the 
-carry chain.  In order to increase the max operating frequency, a new 
-adder design will need to be implemented.  The implementation could take the 
-form of any of the adders listed on page 449 of \cite{cmosvlsi}.  
-
-\section{ Division Support }
-\paragraph{}
-Division support was added to the CPU by implementing the following algorithm in assembly code:
-
-To test and evaluate this algorithm, a prototype of the algorithm was created in 
-the C programming language and is available in appendix \ref{s3/proto-div/main.c}.
-This algorithm was then rewritten in assembly and can be seen in appendix \ref{s3/code.asm}.
-
-All of the functions in this algorithm are available in the CPU except for the 
-''less than or equal to'' comparison.  To implement this algorithm, a comparator was 
-added to the ALU. The implemented ''less than or equal to'' comparator reuses the 
-existing adder design to implement its comparison functions. It is based on the 
-design on page 462 of \cite{cmosvlsi} as shown below.
-\begin{figure}[H]
-  \centering
-  %\includegraphics[width=2.5in]{comparator.png}
-  \label{fig:comparator}
-  \caption{''Less than or equal to'' comparator from  \cite{cmosvlsi}}
-\end{figure}
-
-The verilog implementation is below:
-
-
-\begin{lstlisting}
-module lteq_32(lteq, s, co);
-   
-   output [31:0] lteq;
-   input  [31:0] s;
-   input         co;
-   
-   wire z;
-   
-   assign lteq[31:1] = 31'b0;
-   
-   not notc(nco, co);
-   or  orc (lteq[0], z, nco); 
-   
-   zero_detect_32 zero(z, s);
-
-endmodule // lteq_32 
-\end{lstlisting}
-
-In order for the \verb|lteq_32| module to work correctly, the \verb|addsub_32| 
-circuit must be performing a subtraction operation at the time of the comparison.  
-To guarantee this behavior, the \verb|lteq_32| module is place in the op code 
-seven position of the ALU and the instructions prototype is as follows.
-
-\begin{center} 
-\begin{small}
-\begin{tabular}{ | c | c | c | } 
-\hline ASM Code      & Machine Code                                     & Comments           \\
-\hline lteq @s @a @b & \verb| 0111 addr_s[3:0] addr_a[3:0] addr_b[3:0]| & \verb|@s=@a <= @b| \\
-\hline 
-\end{tabular}
-\end{small}
-\end{center}
-
-The new ALU can be described by the following diagram.
-
-\begin{figure}[H]
-  \centering
-  %\includegraphics[width=4in]{ALU2}
-  \caption{''Less than or equal to'' comparator added to ALU}
-  \label{fig:alu2}
-\end{figure}
+The simulation portion of the design includes a cpu emulator which is defined in \verb|cpu.vhd|, and a memory element which is defined in \verb|mem_elem.vhd|.  The cpu emulates the MIPS32 ISA with an addtional instructions added for gathering performance information.  The added instruction is defined as the stats instruction in the MIPS32 assembler.  This instruction returns the number of I-Cache hits, D-Cache hits and Clock Cycles.  Using this information is possible to determine the CPI of the processor with and without the cache.  
 
 \section{ Design Validation }
 \paragraph{}
-In this section, the procedure for evaluating the validity of the circuit is examined.  There are three steps in validating this circuit: behavioral simulation, post synthesis simulation, and post place and route simulation.
+The design is validated using test programs and debugged using waveforms. There is a total of two test programs which are used to verify the operation and efficiency of the memory hierarchy.  
+\paragraph{ Test Proc Program Design }
+This program stresses the data caches by using all available memory to store and retrieve its results.  The results are then compared to expected results to determine if the test passed or succedded.  The speed up with and without cache was very noticeable as can be seen in the simulation results below.  
+\paragraph{ Simulation Results: Test Proc }
 
-The circuit is put through its paces by the code in appendix \ref{s1/code.asm} and \ref{s3/code.asm}.  The first program computes the product of the values in registers two and three, and stores it in register six.  Then the program, subtracts the product by register six so that it eventually returns to zero.  The second program performs integer division on the values in registers two and three. It returns the quotient in register five and the remainder in register six.  It is designed to test the operation of the "less than or equal to" circuit.  
+\paragraph{ Test Bouncer }
+The bouncer program stresess both the data and instruction caches by jumping in memory to both addresses throughout the address range and performing calculations.  The results show that this program also benefits from having caches enabled but not as much as the Test Proc Program.  
 
-\paragraph{ Behavioral Simulation }
-The first step is a behavioral simulation.  This step shows how the circuit is supposed to behave, given that there are no errors in the synthesis or place and route operations.  It can be considered the baseline simulation of the system.  It is important to have a good behavioral simulation before moving forward because each step of the design flow makes it harder to diagnose or fix bugs.
+\paragraph{ Simulation Results: Bouncer }
 
-The behavioral simulation was successful in both cases.  The results can be seen in appendix \ref{s1/behaviour}, \ref{s2/behaviour} and \ref{s3/behaviour}.
-
-\paragraph{ Post-synthesis Simulation }
-The next step in validation is running a post synthesis simulation.  In this simulation, the circuit is simulated with additional information from the standard cells that will build the circuit.  As a result, propagation delays can be observed in the waveform.  These propagation delays allow a designer to better estimate how the real circuit will respond to a stimulus.  
-
-The post synthesis simulation was successful in both cases. The results can be seen in appendix \ref{s1/postsyn}, \ref{s2/postsyn} and \ref{s3/postsyn}.
-
-\paragraph{ Post-layout Simulation }
-The final step in validation is running a post layout simulation.  In this simulation, the circuit is simulated with additional interconnect and buffer delays.  This is the most accurate simulation possible and should reflect very closely as to how the circuit will react to a stimulus in the field.  If the circuit passes post-layout simulation, then the design can be reasonably guaranteed to perform its desired function.
-
-The post layout simulation was successful in both case.  The results can be seen in appendix \ref{s1/postpr}, \ref{s2/postpr} and \ref{s3/postpr}.
 
 \section{ Synthesis Results }
 \paragraph{}
+In addition to simulating the memory hiearchy this design was synthesized for a Xilinx Virtex 5 FPGA.  The results of synthesis can show that the overhead of adding caches to an FPGA is not particularly resource intensive as small fraction of the total resources of the device are required to implement the cache system.
+\paragraph{ Resource Utilization }
 
-For this exercise, the only required performance characteristics is an operating frequency of 20 MHz.  In order to evaluate this circuits performance, there are two quantitative data points that can be used for evaluation and one quantitative result: layout size, maximum frequency, and critical path.  Layout size is the amount of area that the circuit will take up on a die. Maximum frequency is the maximum frequency at which the circuit can be clocked.  The critical path is the longest path through combinational logic.  These results are evaluated for each stage of the design process: Stage 1 - Carry Ripple Adder, Stage 2- Carry Select Adder, Stage 3 - Division Support.
+% Screen Shot 
 
-\paragraph{ Layout Size }
-The layout size for the stage 1 circuit is $ 1432404 \mu m^2$.  This means that the circuit would fit in a $ 1196.8 \mu m $ by $ 1196.8 \mu m $ square. The layout size was extracted from the cell.rep in appendix \ref{s1/cell.rep}.
-
-The layout size for the stage 2 circuit is $ 1452465 \mu m^2$.  This means that the circuit would fit in a $ 1205.1 \mu m $ by $ 1205.1 \mu m $ square. The layout size was extracted from the cell.rep in appendix \ref{s2/cell.rep}.  This is expected due to the increase in the number of gates needed to build the carry select adder in place of the carry ripple adder.
-
-The layout size for the stage 3 circuit is $ 1473930 \mu m^2$.  This means that the circuit would fit in a $ 1214.0 \mu m $ by $ 1214.0 \mu m $ square. The layout size was extracted from the cell.rep in appendix \ref{s3/cell.rep}.  This is expected because of the additional gates necessary to build the "less than or equal to" comparator.
- 
 \paragraph{ Maximum Frequency }
-The maximum frequency of this circuit is determined by 
-\begin{equation}
-\frac{1000}{library setup time + data arrival time} 
-\end{equation}
-where $librarysetuptime$ and $dataarrivaltime$ are extracted from the 
-timing.rep file located in appendix \ref{s1/timing.rep}, \ref{s2/timing.rep}, and \ref{s3/timing.rep}.
-In our case, this evaluates to 
-\begin{align}
-\frac{1000}{.36 + 17.57} &= 55.77 MHz &\mbox{ for Stage 1, } \\
-\frac{1000}{.36 + 10.98} &= 88.18 MHz &\mbox{ for Stage 2, } \\
-\frac{1000}{.36 + 11.41} &= 84.96 MHz &\mbox{ for Stage 3. } \\
-\end{align}
+The maximum reported frequency of the Memory hierarchy is reported to be 
+\begin{verbatim}
+Timing Summary:
+---------------
+Speed Grade: -2
 
-The speeds align with expected values.  The speed-up associated with the change from a carry ripple adder to a carry select is as expected, and the small reduction in speed for stage 3 is due to the addition of the "less than or equal to" comparator.
+   Minimum period: 5.751ns (Maximum Frequency: 173.872MHz)
+   Minimum input arrival time before clock: 5.718ns
+   Maximum output required time after clock: 6.196ns
+   Maximum combinational path delay: 6.162ns
+\end{verbatim}
 
-\paragraph{ Critical Path } 
+\section{ Optimizations \& Additional Features }
+\paragraph{}
+Additional optimizations were performed on the system in order to reduce resource usage.  Because the system uses a write-thru and no write allocate strategy it is easy for us to remove the dirty bit from the data cache.  This was accomplished by writing the data to both the cache and memory when the data is in cache.
 
-The critical path for the stage 1 circuit is the path from code[1] through memory port\verb=_=b through the addsub and the carry chain of the adder to the most significant bits of the sum through a couple multiplexers and back to memory through port\verb=_=s.
-
-The critical path for the stage 2 circuit is the path from code[1] through memory port\verb=_=b through the addsub and the carry chain of the carry select adder to the most significant bits of the sum through a couple multiplexers and back to memory through port\verb=_=s.
-
-The critical path for the stage 3 circuit is the path from code[1] through memory port\verb=_=b through the addsub and the carry chain of the addsub to the most significant bits of the sum through the "less than or equal to" comparator.  Through a couple multiplexers and back to memory through port\verb=_=s.
-
-The critical path is extracted from the timing.rep.5 located in appendix \ref{s1/timing.rep.5.final}, \ref{s2/timing.rep.5.final}, and \ref{s3/timing.rep.5.final}.
+This design includes some additional features which are unique.  The memory hierarchy is syntheisizable, an assembler and linker were created for the design and the design utilizes a form of metaprogramming in order to generate its bouncer test cases.  The memory hierarchy was designed from the begining to be completely synthesizable in an FPGA, specifically the Xilinx Virtex 5 VLX110T.  This was due to a unique interest among the group in implementation of ideas and the overall effect on resources that a cache may require.  From our results section it is clear that the use of cache in FPGA based systems is feasible.  The assembler and linker were design to provide us with additional flexibility in designing our test cases, as well as providing a way to avoid single bit errors that often result from hand coding values.  The linker provides a way to link data portions, and code together to form a full test set. Finally, a form of metaprogramming is used by utilizing a high level scripting language called python to generate our test cases.  The data and program are generated run and then re-run on the processor.
 
 \section{ Conclusions and Future Work }
 \paragraph{}
-This report shows the design methods and validation process for extending an
-eight bit CPU to a 32-bit CPU, replacing the carry ripple adder in the this CPU
-with a carry select adder, and a method for implementing integer division on this
-CPU.  After completing the design, it is apparent that additional functionality could be added to this CPU.  The number six opcode could be filled with a "greater than" comparator.  This would provide the programmer with additional functionality from which to build programs.  The performance of the system could be improved by implementing a more advanced adder architecture because the critical path is still through the carry chain of the adder.
-
-\pagebreak{}
-\begin{thebibliography}{widestlabel}
-\bibitem{progress_report}
-  Spenser Gilliland
-  Progress Report: Design and Synthesis of Central Processing Units.
-  Illinois Institute of Technology, Illinois,
-  Fall 2010.
-\bibitem{instructions}
-  Prof. Jia Wang,
-  Final Project: Design and Synthesis of Central Processing Units,
-  Illinois Institute of Technology, Illinois,
-  Fall 2010.
-\bibitem{cmosvlsi}
-  Neil H. E. Weste, David Money Harris,
-  CMOS VLSI Design: A Circuits and Systems Perspective,
-  Addision Wesley, Massachusetts,
-  4th Edition,
-  2011.
-\bibitem{wpedia:harvardarch}
-  Wikipedia contributors,
-  Harvard Architecture,
-  Wikipedia, The Free Encylopedia,
-  \verb|http://en.wikipedia.org/wiki/Harvard_architecture| (accessed November
-14, 2010)
-\end{thebibliography}
+The implementation described herin is an accurate depiction of the effects memory hierachy has on the overall performance of a system.  Future work should focus on using set associative caches as well as additional write strategies.
 
 \pagebreak{}
 \appendixpage
 \appendix
-\section{ Stage 1: 32-bit CPU }
 
-\subsection{Implementation}
-\subsubsection{cpu32.v}
-\label{s1/cpu32.v}
-\begin{scriptsize}
-  %\verbatiminput{s1/cpu32.v}
-\end{scriptsize}
-\subsubsection{code.asm}
-\label{s1/code.asm}
-\begin{scriptsize}
-  %\verbatiminput{s1/code.asm}
-\end{scriptsize}
-\subsubsection{code.hex}
-\label{s1/code.hex}
-%\begin{scriptsize}
-  %\verbatiminput{s1/code.hex}
-%\end{scriptsize}
-
-\subsection{Verification}
-\subsubsection{Behavioral}
-\label{s1/behaviour}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/behaviour-part1} \\%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/behaviour-part2} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/behaviour-part3} \\
-\begin{scriptsize}
-  %\VerbatimInput{s1/behaviour.log}
-\end{scriptsize}
-\subsubsection{Post Synthesis}
-\label{s1/postsyn}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/postsyn-part1} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/postsyn-part2} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/postsyn-part3} \\
-\begin{scriptsize}
-  %\VerbatimInput{s1/postsyn.log}
-\end{scriptsize}
-\subsubsection{Post Place and Route}
-\label{s1/postpr}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/postpr-part1} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/postpr-part2} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s1/postpr-part3} \\
-\begin{scriptsize}
-  %\VerbatimInput{s1/postpr.log}
-\end{scriptsize}
-
-\subsection{Synthesis}
-\subsubsection{cell.rep}
-\label{s1/cell.rep}
-\begin{scriptsize}
-  %\VerbatimInput[firstline=5300]{s1/cell.rep}
-\end{scriptsize}
-\subsubsection{timing.rep}
-\label{s1/timing.rep}
-\begin{scriptsize}
-  %\VerbatimInput{s1/timing.rep}
-\end{scriptsize}
-\subsubsection{timing.rep.5.final}
-\label{s1/timing.rep.5.final}
-\begin{scriptsize}
-  %\VerbatimInput[lastline=20]{s1/timing.rep.5.final}
-\end{scriptsize}
-
-\section{ Stage 2: 32-bit CPU w/ Carry Skip Adder }
-
-\subsection{Implementation}
-\subsubsection{cpu32.v}
-\label{s2/cpu32.v}
-\begin{scriptsize}
-  %\verbatiminput{s2/cpu32.v}
-\end{scriptsize}
-\subsubsection{code.asm}
-\label{s2/code.asm}
-\begin{scriptsize}
-  %\verbatiminput{s2/code.asm}
-\end{scriptsize}
-\subsubsection{code.hex}
-\label{s2/code.hex}
-\begin{scriptsize}
-  %\verbatiminput{s2/code.hex}
-\end{scriptsize}
-
-\subsection{Verification}
-\subsubsection{Behavioral}
-\label{s2/behaviour}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/behaviour-part1} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/behaviour-part2} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/behaviour-part3} \\
-\begin{scriptsize}
-  %\VerbatimInput{s2/behaviour.log}
-\end{scriptsize}
-\subsubsection{Post Synthesis}
-\label{s2/postsyn}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/postsyn-part1} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/postsyn-part2} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/postsyn-part3} \\
-\begin{scriptsize}
-  %\VerbatimInput{s2/postsyn.log}
-\end{scriptsize}
-\subsubsection{Post Place and Route}
-\label{s2/postpr}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/postpr-part1} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/postpr-part2} \\
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s2/postpr-part3} \\
-\begin{scriptsize}
-  %\VerbatimInput{s2/postpr.log}
-\end{scriptsize}
-
-\subsection{Synthesis}
-\subsubsection{cell.rep}
-\label{s2/cell.rep}
-\begin{scriptsize}
-  %\VerbatimInput[firstline=5300]{s2/cell.rep}
-\end{scriptsize}
-\subsubsection{timing.rep}
-\label{s2/timing.rep}
-\begin{scriptsize}
-  %\VerbatimInput{s2/timing.rep}
-\end{scriptsize}
-\subsubsection{timing.rep.5.final}
-\label{s2/timing.rep.5.final}
-\begin{scriptsize}
-  %\VerbatimInput[lastline=20]{s2/timing.rep.5.final}
-\end{scriptsize}
-
-\section{ Stage 3: 32-bit CPU w/ Division Support }
-
-\subsection{Implementation}
-\subsubsection{cpu32.v}
-\label{s3/cpu32.v}
-\begin{scriptsize}
-  %\verbatiminput{s3/cpu32.v}
-\end{scriptsize}
-\subsubsection{code.asm}
-\label{s3/code.asm}
-\begin{scriptsize}
-  %\verbatiminput{s3/code.asm}
-\end{scriptsize}
-\subsubsection{code.hex}
-\label{s3/code.hex}
-\begin{scriptsize}
-  %\verbatiminput{s3/code.hex}
-\end{scriptsize}
-
-\subsection{Verification}
-\subsubsection{Behavioral}
-\label{s3/behaviour}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s3/behaviour-part1} \\
-\begin{scriptsize}
-  %\VerbatimInput{s3/behaviour.log}
-\end{scriptsize}
-\subsubsection{Post Synthesis}
-\label{s3/postsyn}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s3/postsyn-part1} \\
-
-\begin{scriptsize}
-  %\VerbatimInput{s3/postsyn.log}
-\end{scriptsize}
-\subsubsection{Post Place and Route}
-\label{s3/postpr}
-%\includegraphics[width=4.7in, trim= 1in 6in .2in 2in, clip=true]{s3/postpr-part1} \\
-\begin{scriptsize}
-  %\VerbatimInput{s3/postpr.log}
-\end{scriptsize}
-
-\subsection{Synthesis}
-\subsubsection{cell.rep}
-\label{s3/cell.rep}
-\begin{scriptsize}
-  %\VerbatimInput[firstline=5300]{s3/cell.rep}
-\end{scriptsize}
-\subsubsection{timing.rep}
-\label{s3/timing.rep}
-\begin{scriptsize}
-  %\VerbatimInput{s3/timing.rep}
-\end{scriptsize}
-\subsubsection{timing.rep.5.final}
-\label{s3/timing.rep.5.final}
-\begin{scriptsize}
-  %\VerbatimInput[lastline=20]{s3/timing.rep.5.final}
-\end{scriptsize}
-
-\section{Division Algorithm}
-\subsection{proto-div/main.c}
-
-
-\section{ Utilities }
-\subsection{ assembler.c }
 
 
 

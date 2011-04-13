@@ -5,6 +5,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 use WORK.CONSTANTS.ALL;
@@ -143,10 +144,15 @@ begin
       );
    end generate;
    
-
-
-
-
+   -- synthesis translate_off
+   CPU_COUNTER: process(clk)
+   begin
+      if rising_edge(clk) then
+         CLK_CNTR := CLK_CNTR + 1;
+      end if;
+   end process;
+   -- synthesis translate_on
+   
 end Behavioral;
 
 
