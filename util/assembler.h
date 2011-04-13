@@ -30,7 +30,7 @@
 #  define JR_FUNC  0x08
 #  define SLL_FUNC 0x00
 #  define NOR_FUNC 0x27
-
+#  define STATS_FUNC 0x2F
 #define OPMASK 0xFC000000
 #define RSMASK 0x03E00000
 #define RTMASK 0x001F0000

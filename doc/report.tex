@@ -25,36 +25,27 @@
 
 \section{ Abstract }
 \paragraph{}
-This report depicts the design process as well as simulation results for our design of a memory hierarchy which includes a 512 byte instruction cache, 256 byte data cache and 2048 byte main memory.  
+This report depicts the design process as well as simulation results of a memory hierarchy which includes a 512 byte instruction cache, 256 byte data cache and 2048 byte main memory.  The project was successful and the collected data is presented in section \ref{Results}.  This design is notable because the memory hierarchy was not only simulated but synthesized for an FPGA.  The results from synthesis are included in section \ref{Results:Synthesis}.  Furthermore, an assembler and linker were created to allow us the opportunity to experiment with different types of programs inorder to better assess the effectiveness of the memory hierarchy.
 
 \pagebreak
 \section{ Introduction }
 \paragraph{}
-In the previous exercise, an eight bit CPU was verified and synthesized \cite{progress_report}.
-This CPU implemented a routine that allowed one to multiply two
-numbers as long as the result was less than eight bits.  In order to implement
-larger multiplication, this project extends the previous design to allow 32-bit
-results.  This increase in precision is accomplished by widening the data path to
-32-bits. 
-
-In the previous exercise, the critical path of combinational logic was the path
-through the carry chain of the carry ripple adder \cite{progress_report}.  By extending this CPU to 32
-bits, the design has greatly increased the delay through this critical path.  In
-order to reduce the critical path, the new design implements a carry
-select adder.  Further information on the carry select adder is available in
-section \ref{Adders}.
-
-In every market, there is a temporary monopoly created when one company
-releases a product faster than the others, and the margins this
-company can expected to extract from the market can be exponentially larger
-than their competitors.  Therefore, there is intense pressure on engineers to
-reduce the time to market of there products.  During the last few weeks of our
-design, the business development group has decided that adding division support
-is a critical need for the customer.  In order to meet the demand, an algorithm 
-for division is developed and implemented on this CPU.
+This project presented an interesting opportunity to verify and evaluate the effectiveness of cache schemes on the performance of a computer program.  The programs that were evaluated were designed to find both worse case and best case performance as well as to show the effect of the locality of memory on the overall effectiveness of the processor. In addtion, the design and implementation of various memory hierarchy elements are shown.
 
 \section{ Background }
-\paragraph{}
+
+\paragraph{Register File}
+
+\paragraph{Memory}
+In order to understand how a memory hierarchy works, one must first understand how memory works.  In the large percentage of memory elements the access time of the memory element is much larger than the access time of local registers.  This is in order to reduce the costs of the external memory elements.  The memory elements are usually controlled by a memory controller which enforces the constraints on the memory elements and allows a user to use them using the basic address, wr, and data lines
+
+\paragraph{Cache}
+
+
+
+In a memory hierarchy there is three components: the memory, the bus, and the cache
+
+
 Both the eight bit CPU and the 32-bit CPU have the same basic design and instruction set. The purpose of a CPU is to implement a set of
 instructions and provide a mechanism to execute a series of instructions. 
 The process by which a processor executes instructions is called the fetch and

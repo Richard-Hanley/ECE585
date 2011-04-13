@@ -43,7 +43,18 @@ unsigned int assemble(char* line)
       assembly = ((SW_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) | 
                  ((t << RTSTART) & RTMASK) | ((imm << IMSTART) & IMMASK);
 	}
-	else if(strcmp(opcode, "ADD") == 0 )
+   else if(strcmp(opcode, "STATS") == 0)
+   {
+      if(sscanf(line, "STATS R%i, R%i, R%i;", &d, &s, &t) != 3)
+      {
+         perror("Bad STATS");
+         exit(EXIT_FAILURE);
+      }
+      assembly = ((ALU_OP << OPSTART) & OPMASK) | ((s << RSSTART) & RSMASK) |
+                 (( t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
+                 ((STATS_FUNC << FUSTART) & FUMASK);
+   }
+   else if(strcmp(opcode, "ADD") == 0 )
 	{
 		if(sscanf(line, "ADD R%i, R%i, R%i;", &d, &s, &t) != 3)
 		{

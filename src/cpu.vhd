@@ -93,6 +93,7 @@ begin
          data <= regs(conv_integer(RT));
          wait for CYCLE_TIME; -- Give the done signal time to be reset
          wait until done = '1' and rising_edge(clk);
+         wr <= '0';
          busy <= '0';
          report "Completed SW R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) & "(R" & integer'image(conv_integer(RS)) & ")" severity NOTE;
       elsif OPCODE = ALU_OP then
@@ -123,6 +124,11 @@ begin
             regs(conv_integer(RD)) <= regs(conv_integer(RS)) nor regs(conv_integer(RT));
             report "R" & integer'image(conv_integer(RD)) & "<=" & integer'image(conv_integer(regs(conv_integer(RD)))) severity NOTE;
             report "Completed NOR R" & integer'image(conv_integer(RD)) & " R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) severity NOTE;
+         elsif FUNC = STATS_FUNC then
+            regs(conv_integer(RD)) <= conv_std_logic_vector(CLK_CNTR, BUS_WIDTH);
+            regs(conv_integer(RT)) <= conv_std_logic_vector(ICACHE_HITS, BUS_WIDTH);
+            regs(conv_integer(RS)) <= conv_std_logic_vector(DCACHE_HITS, BUS_WIDTH);
+            report "Stats: CLK_CYCLES = " & integer'image(CLK_CNTR) & " IHc = " & integer'image(ICACHE_HITS) & " DHc = " & integer'image(DCACHE_HITS) severity NOTE;
          else
             report "cpu.vhd: Unknown ALU function" severity ERROR;
             wait; -- Kill the simulation on a bad instruction
@@ -130,9 +136,9 @@ begin
       elsif OPCODE = BEQ_OP then
          if regs(conv_integer(RS)) = regs(conv_integer(RT)) then
             if IMM(15) = '0' then
-               PC <= PC + (IMM & "00"); -- 4 is incremented below.
+               PC <= PC + (IMM & "00"); 
             else
-               PC <= PC - ((not IMM +1) & "00") ;
+               PC <= PC - ((not IMM +1) & "00") ; -- Kinda hacky but two's complement subtraction.
             end if;
          end if;
          report "Completed BEQ R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
@@ -141,9 +147,9 @@ begin
       elsif OPCODE = BNE_OP then
          if regs(conv_integer(RS)) /= regs(conv_integer(RT)) then
             if IMM(15) = '0' then
-               PC <= PC + (IMM & "00"); -- 4 is incremented below.
+               PC <= PC + (IMM & "00");
             else
-               PC <= PC - ((not IMM +1) & "00") ; -- uhh this is 
+               PC <= PC - ((not IMM + 1) & "00") ; -- Kinda hacky but two's complement subtraction.
             end if;
          end if;
          report "Completed BNE R" & integer'image(conv_integer(RS)) & " R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(to_stdlogicvector(to_bitvector(IMM) sll 2))) severity NOTE;

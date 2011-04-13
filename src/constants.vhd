@@ -15,7 +15,7 @@ package constants is
    constant CYCLE_TIME    : time := 32 ns; -- Must be divisible by bus rate.
    constant BYTE_SIZE     : integer := 8; -- Size of a Byte
    constant PROG_FILENAME : string := "code.hex"; -- Name of code to run.
-   constant NOCACHE       : std_logic := '1';
+   constant NOCACHE       : std_logic := '0';
    
    -- From CPU Requirments
    constant CPU_WIDTH          : integer := 32; -- 32 bit MIPS CPU
@@ -78,7 +78,9 @@ package constants is
    -- Metric Counters
    shared variable ICACHE_HITS : integer := 0;
    shared variable DCACHE_HITS : integer := 0;
-   shared variable DBSET       : integer := 0;
+   shared variable CLK_CNTR    : integer := 0;
+   constant STATS_FUNC : std_logic_vector(5 downto 0) := "111111";
+   
    
    function log2(A : integer) return integer;
    function max4(A : integer;
