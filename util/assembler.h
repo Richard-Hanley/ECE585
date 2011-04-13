@@ -23,6 +23,7 @@
 #define BNE_OP 0x05
 #define LUI_OP 0x0F
 #define IMM_OP 0xFF
+#define BAD_OP 0x36
 #  define ADD_FUNC 0x20
 #  define AND_FUNC 0x24
 #  define SLT_FUNC 0x2A

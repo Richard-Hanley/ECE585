@@ -158,6 +158,10 @@ unsigned int assemble(char* line)
                  ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
                  ((SLT_FUNC << FUSTART) & FUMASK);
 	}
+    else if(stcmp(opcode, "BAD") == 0)
+    {
+        if
+    }
 
     else
 	{
