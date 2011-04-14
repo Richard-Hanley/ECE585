@@ -1,17 +1,17 @@
-Release 13.1 - xst O.40d (lin)
+Release 13.1 - xst O.40d (lin64)
 Copyright (c) 1995-2011 Xilinx, Inc.  All rights reserved.
 --> 
 Parameter TMPDIR set to xst/projnav.tmp
 
 
-Total REAL time to Xst completion: 1.00 secs
+Total REAL time to Xst completion: 0.00 secs
 Total CPU time to Xst completion: 0.07 secs
  
 --> 
 Parameter xsthdpdir set to xst
 
 
-Total REAL time to Xst completion: 1.00 secs
+Total REAL time to Xst completion: 0.00 secs
 Total CPU time to Xst completion: 0.07 secs
  
 --> 
@@ -45,7 +45,7 @@ Ignore Synthesis Constraint File   : NO
 ---- Target Parameters
 Output File Name                   : "top"
 Output Format                      : NGC
-Target Device                      : xc5vlx110t-2-ff1136
+Target Device                      : xc3s1600e-4-fg320
 
 ---- Source Options
 Top Module Name                    : top
@@ -66,28 +66,25 @@ ROM Style                          : Auto
 Mux Extraction                     : Yes
 Resource Sharing                   : YES
 Asynchronous To Synchronous        : NO
-Use DSP Block                      : Auto
+Multiplier Style                   : Auto
 Automatic Register Balancing       : No
 
 ---- Target Options
-LUT Combining                      : Off
-Reduce Control Sets                : Off
 Add IO Buffers                     : YES
-Global Maximum Fanout              : 100000
-Add Generic Clock Buffer(BUFG)     : 32
+Global Maximum Fanout              : 500
+Add Generic Clock Buffer(BUFG)     : 24
 Register Duplication               : YES
 Slice Packing                      : YES
 Optimize Instantiated Primitives   : NO
-Use Clock Enable                   : Auto
-Use Synchronous Set                : Auto
-Use Synchronous Reset              : Auto
+Use Clock Enable                   : Yes
+Use Synchronous Set                : Yes
+Use Synchronous Reset              : Yes
 Pack IO Registers into IOBs        : Auto
 Equivalent register Removal        : YES
 
 ---- General Options
 Optimization Goal                  : Speed
 Optimization Effort                : 1
-Power Reduction                    : NO
 Keep Hierarchy                     : No
 Netlist Hierarchy                  : As_Optimized
 RTL Output                         : Yes
@@ -100,7 +97,6 @@ Bus Delimiter                      : <>
 Case Specifier                     : Maintain
 Slice Utilization Ratio            : 100
 BRAM Utilization Ratio             : 100
-DSP48 Utilization Ratio            : 100
 Verilog 2001                       : YES
 Auto BRAM Packing                  : NO
 Slice Utilization Ratio Delta      : 5
@@ -111,15 +107,15 @@ Slice Utilization Ratio Delta      : 5
 =========================================================================
 *                          HDL Compilation                              *
 =========================================================================
-Compiling vhdl file "/home/spenser/Desktop/ECE585/src/constants.vhd" in Library work.
-Architecture constants of Entity constants is up to date.
-Compiling vhdl file "/home/spenser/Desktop/ECE585/src/cache.vhd" in Library work.
-Architecture behavioral of Entity cache is up to date.
-Compiling vhdl file "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" in Library work.
+Compiling vhdl file "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/constants.vhd" in Library work.
+Package <constants> compiled.
+Package body <constants> compiled.
+Compiling vhdl file "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" in Library work.
 Architecture behavioral of Entity memory_ctl is up to date.
-Compiling vhdl file "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd" in Library work.
-Architecture behavioral of Entity cache_ctl is up to date.
-Compiling vhdl file "/home/spenser/Desktop/ECE585/src/top.vhd" in Library work.
+Compiling vhdl file "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" in Library work.
+Entity <cache_ctl> compiled.
+Entity <cache_ctl> (Architecture <behavioral>) compiled.
+Compiling vhdl file "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/top.vhd" in Library work.
 Entity <top> compiled.
 Entity <top> (Architecture <behavioral>) compiled.
 
@@ -138,12 +134,6 @@ Analyzing hierarchy for entity <memory_ctl> in library <work> (architecture <beh
 	WR_DATA_CYCLES = 3
 	WR_INIT_CYCLES = 1
 
-Analyzing hierarchy for entity <cache> in library <work> (architecture <behavioral>) with generics.
-	CACHE_DEPTH = 128
-
-Analyzing hierarchy for entity <cache> in library <work> (architecture <behavioral>) with generics.
-	CACHE_DEPTH = 64
-
 
 =========================================================================
 *                            HDL Analysis                               *
@@ -154,33 +144,29 @@ Entity <top> analyzed. Unit <top> generated.
 Analyzing generic Entity <cache_ctl> in library <work> (Architecture <behavioral>).
 	READ_DELAY = 1
 	WRITE_DELAY = 1
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd" line 134: report: cache_ctl.vhd: ICACHE_HIT
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd" line 138: report: cache_ctl.vhd: DCACHE_HIT
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd" line 143: report: cache_ctl.vhd: Write passthrough
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd" line 147: report: cache_ctl.vhd: CACHE MISS
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd" line 232: report: cache_ctl.vhd: Error bad state
+WARNING:Xst:2211 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 75: Instantiating black box module <cache>.
+    Set user-defined property "CACHE_DEPTH =  128" for instance <ICACHE> in unit <cache_ctl>.
+WARNING:Xst:2211 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 92: Instantiating black box module <cache>.
+    Set user-defined property "CACHE_DEPTH =  64" for instance <DCACHE> in unit <cache_ctl>.
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 134: report: cache_ctl.vhd: ICACHE_HIT
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 138: report: cache_ctl.vhd: DCACHE_HIT
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 143: report: cache_ctl.vhd: Write passthrough
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 147: report: cache_ctl.vhd: CACHE MISS
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd" line 232: report: cache_ctl.vhd: Error bad state
 Entity <cache_ctl> analyzed. Unit <cache_ctl> generated.
-
-Analyzing generic Entity <cache.1> in library <work> (Architecture <behavioral>).
-	CACHE_DEPTH = 128
-Entity <cache.1> analyzed. Unit <cache.1> generated.
-
-Analyzing generic Entity <cache.2> in library <work> (Architecture <behavioral>).
-	CACHE_DEPTH = 64
-Entity <cache.2> analyzed. Unit <cache.2> generated.
 
 Analyzing generic Entity <memory_ctl> in library <work> (Architecture <behavioral>).
 	RD_DATA_CYCLES = 2
 	RD_INIT_CYCLES = 4
 	WR_DATA_CYCLES = 3
 	WR_INIT_CYCLES = 1
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 132: report: memory_ctl.vhd: 0: Incomplete read operation
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 142: report: memory_ctl.vhd: 1: Incomplete read operation
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 146: report: memory_ctl.vhd: 2: Incomplete read operation
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 171: report: memory_ctl.vhd: 0: Incomplete write operation
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 181: report: memory_ctl.vhd: 1:Incomplete write operation
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 185: report: memory_ctl.vhd: 2: Incomplete write operation
-INFO:Xst:1749 - "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd" line 199: report: memory_ctl.vhd: Error bad state
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 132: report: memory_ctl.vhd: 0: Incomplete read operation
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 142: report: memory_ctl.vhd: 1: Incomplete read operation
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 146: report: memory_ctl.vhd: 2: Incomplete read operation
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 171: report: memory_ctl.vhd: 0: Incomplete write operation
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 181: report: memory_ctl.vhd: 1:Incomplete write operation
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 185: report: memory_ctl.vhd: 2: Incomplete write operation
+INFO:Xst:1749 - "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd" line 199: report: memory_ctl.vhd: Error bad state
 Entity <memory_ctl> analyzed. Unit <memory_ctl> generated.
 
 
@@ -191,7 +177,7 @@ Entity <memory_ctl> analyzed. Unit <memory_ctl> generated.
 Performing bidirectional port resolution...
 
 Synthesizing Unit <memory_ctl>.
-    Related source file is "/home/spenser/Desktop/ECE585/src/memory_ctl.vhd".
+    Related source file is "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/memory_ctl.vhd".
 INFO:Xst:1799 - State rd_data is never reached in FSM <state>.
 INFO:Xst:1799 - State rd_ready is never reached in FSM <state>.
 INFO:Xst:1799 - State rd_done is never reached in FSM <state>.
@@ -231,34 +217,8 @@ INFO:Xst:1799 - State rd_done is never reached in FSM <state>.
 Unit <memory_ctl> synthesized.
 
 
-Synthesizing Unit <cache_1>.
-    Related source file is "/home/spenser/Desktop/ECE585/src/cache.vhd".
-WARNING:Xst:647 - Input <clk> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-    Found 128x35-bit dual-port RAM <Mram_cache> for signal <cache>.
-    Found 32-bit tristate buffer for signal <fill_entry<31:0>>.
-    Found 2-bit comparator equal for signal <hit$cmp_eq0000> created at line 75.
-    Summary:
-	inferred   1 RAM(s).
-	inferred   1 Comparator(s).
-	inferred  32 Tristate(s).
-Unit <cache_1> synthesized.
-
-
-Synthesizing Unit <cache_2>.
-    Related source file is "/home/spenser/Desktop/ECE585/src/cache.vhd".
-WARNING:Xst:647 - Input <clk> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
-    Found 64x36-bit dual-port RAM <Mram_cache> for signal <cache>.
-    Found 32-bit tristate buffer for signal <fill_entry<31:0>>.
-    Found 3-bit comparator equal for signal <hit$cmp_eq0000> created at line 75.
-    Summary:
-	inferred   1 RAM(s).
-	inferred   1 Comparator(s).
-	inferred  32 Tristate(s).
-Unit <cache_2> synthesized.
-
-
 Synthesizing Unit <cache_ctl>.
-    Related source file is "/home/spenser/Desktop/ECE585/src/cache_ctl.vhd".
+    Related source file is "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/cache_ctl.vhd".
     Found finite state machine <FSM_1> for signal <state>.
     -----------------------------------------------------------------------
     | States             | 3                                              |
@@ -278,6 +238,7 @@ WARNING:Xst:737 - Found 1-bit latch for signal <done_out>. Latches may be genera
     Found 32-bit tristate buffer for signal <data_in>.
     Found 3-bit up counter for signal <cntr>.
     Found 4-bit comparator less for signal <cntr$cmp_lt0000> created at line 183.
+    Found 32-bit 4-to-1 multiplexer for signal <data_in$mux0000> created at line 131.
     Found 32-bit adder for signal <filler_addr>.
     Found 32-bit register for signal <start_addr>.
     Summary:
@@ -286,12 +247,13 @@ WARNING:Xst:737 - Found 1-bit latch for signal <done_out>. Latches may be genera
 	inferred  32 D-type flip-flop(s).
 	inferred   1 Adder/Subtractor(s).
 	inferred   1 Comparator(s).
+	inferred  32 Multiplexer(s).
 	inferred  64 Tristate(s).
 Unit <cache_ctl> synthesized.
 
 
 Synthesizing Unit <top>.
-    Related source file is "/home/spenser/Desktop/ECE585/src/top.vhd".
+    Related source file is "/data/Professional Log/classes/Advanced Computer Architecture - ECE 585/Project2/src/top.vhd".
 Unit <top> synthesized.
 
 
@@ -299,9 +261,6 @@ Unit <top> synthesized.
 HDL Synthesis Report
 
 Macro Statistics
-# RAMs                                                 : 2
- 128x35-bit dual-port RAM                              : 1
- 64x36-bit dual-port RAM                               : 1
 # Adders/Subtractors                                   : 1
  32-bit adder                                          : 1
 # Counters                                             : 2
@@ -311,16 +270,15 @@ Macro Statistics
  32-bit register                                       : 3
 # Latches                                              : 1
  1-bit latch                                           : 1
-# Comparators                                          : 11
- 2-bit comparator equal                                : 1
- 3-bit comparator equal                                : 1
+# Comparators                                          : 9
  32-bit comparator equal                               : 2
  32-bit comparator not equal                           : 2
  4-bit comparator less                                 : 1
  5-bit comparator not equal                            : 1
  8-bit comparator greater                              : 3
-# Tristates                                            : 68
- 1-bit tristate buffer                                 : 64
+# Multiplexers                                         : 1
+ 32-bit 4-to-1 multiplexer                             : 1
+# Tristates                                            : 4
  32-bit tristate buffer                                : 4
 
 =========================================================================
@@ -355,52 +313,11 @@ Optimizing FSM <GEN_CACHE.MEM_CTL/state/FSM> on signal <state[1:3]> with user en
 INFO:Xst:2261 - The FF/Latch <start_addr_0> in Unit <GEN_CACHE.C_CTL> is equivalent to the following 3 FFs/Latches, which will be removed : <start_addr_1> <start_addr_2> <start_addr_3> 
 WARNING:Xst:1710 - FF/Latch <start_addr_0> (without init value) has a constant value of 0 in block <GEN_CACHE.C_CTL>. This FF/Latch will be trimmed during the optimization process.
 
-Synthesizing (advanced) Unit <cache_1>.
-INFO:Xst:3218 - HDL ADVISOR - The RAM <Mram_cache> will be implemented on LUTs either because you have described an asynchronous read or because of currently unsupported block RAM features. If you have described an asynchronous read, making it synchronous would allow you to take advantage of available block RAM resources, for optimized device usage and improved timings. Please refer to your documentation for coding guidelines.
-    -----------------------------------------------------------------------
-    | ram_type           | Distributed                         |          |
-    -----------------------------------------------------------------------
-    | Port A                                                              |
-    |     aspect ratio   | 128-word x 35-bit                   |          |
-    |     clkA           | connected to signal <bus_clk>       | rise     |
-    |     weA            | connected to signal <wr>            | high     |
-    |     addrA          | connected to signal <addr_fill>     |          |
-    |     diA            | connected to signal <fill_entry>    |          |
-    -----------------------------------------------------------------------
-    | Port B                                                              |
-    |     aspect ratio   | 128-word x 35-bit                   |          |
-    |     addrB          | connected to signal <addr_check>    |          |
-    |     doB            | connected to signal <check_entry>   |          |
-    -----------------------------------------------------------------------
-Unit <cache_1> synthesized (advanced).
-
-Synthesizing (advanced) Unit <cache_2>.
-INFO:Xst:3218 - HDL ADVISOR - The RAM <Mram_cache> will be implemented on LUTs either because you have described an asynchronous read or because of currently unsupported block RAM features. If you have described an asynchronous read, making it synchronous would allow you to take advantage of available block RAM resources, for optimized device usage and improved timings. Please refer to your documentation for coding guidelines.
-    -----------------------------------------------------------------------
-    | ram_type           | Distributed                         |          |
-    -----------------------------------------------------------------------
-    | Port A                                                              |
-    |     aspect ratio   | 64-word x 36-bit                    |          |
-    |     clkA           | connected to signal <bus_clk>       | rise     |
-    |     weA            | connected to signal <wr>            | high     |
-    |     addrA          | connected to signal <addr_fill>     |          |
-    |     diA            | connected to signal <fill_entry>    |          |
-    -----------------------------------------------------------------------
-    | Port B                                                              |
-    |     aspect ratio   | 64-word x 36-bit                    |          |
-    |     addrB          | connected to signal <addr_check>    |          |
-    |     doB            | connected to signal <check_entry>   |          |
-    -----------------------------------------------------------------------
-Unit <cache_2> synthesized (advanced).
-
 =========================================================================
 Advanced HDL Synthesis Report
 
 Macro Statistics
 # FSMs                                                 : 2
-# RAMs                                                 : 2
- 128x35-bit dual-port distributed RAM                  : 1
- 64x36-bit dual-port distributed RAM                   : 1
 # Adders/Subtractors                                   : 1
  32-bit adder                                          : 1
 # Counters                                             : 2
@@ -410,14 +327,14 @@ Macro Statistics
  Flip-Flops                                            : 96
 # Latches                                              : 1
  1-bit latch                                           : 1
-# Comparators                                          : 11
- 2-bit comparator equal                                : 1
- 3-bit comparator equal                                : 1
+# Comparators                                          : 9
  32-bit comparator equal                               : 2
  32-bit comparator not equal                           : 2
  4-bit comparator less                                 : 1
  5-bit comparator not equal                            : 1
  8-bit comparator greater                              : 3
+# Multiplexers                                         : 1
+ 32-bit 4-to-1 multiplexer                             : 1
 
 =========================================================================
 
@@ -429,14 +346,8 @@ WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <start_addr_1> (with
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <start_addr_2> (without init value) has a constant value of 0 in block <cache_ctl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:1895 - Due to other FF/Latch trimming, FF/Latch <start_addr_3> (without init value) has a constant value of 0 in block <cache_ctl>. This FF/Latch will be trimmed during the optimization process.
 WARNING:Xst:2040 - Unit top: 32 multi-source signals are replaced by logic (pull-up yes): mem_cache_data<0>, mem_cache_data<10>, mem_cache_data<11>, mem_cache_data<12>, mem_cache_data<13>, mem_cache_data<14>, mem_cache_data<15>, mem_cache_data<16>, mem_cache_data<17>, mem_cache_data<18>, mem_cache_data<19>, mem_cache_data<1>, mem_cache_data<20>, mem_cache_data<21>, mem_cache_data<22>, mem_cache_data<23>, mem_cache_data<24>, mem_cache_data<25>, mem_cache_data<26>, mem_cache_data<27>, mem_cache_data<28>, mem_cache_data<29>, mem_cache_data<2>, mem_cache_data<30>, mem_cache_data<31>, mem_cache_data<3>, mem_cache_data<4>, mem_cache_data<5>, mem_cache_data<6>, mem_cache_data<7>, mem_cache_data<8>, mem_cache_data<9>.
-WARNING:Xst:2042 - Unit cache_2: 32 internal tristates are replaced by logic (pull-up yes): fill_entry<0>, fill_entry<10>, fill_entry<11>, fill_entry<12>, fill_entry<13>, fill_entry<14>, fill_entry<15>, fill_entry<16>, fill_entry<17>, fill_entry<18>, fill_entry<19>, fill_entry<1>, fill_entry<20>, fill_entry<21>, fill_entry<22>, fill_entry<23>, fill_entry<24>, fill_entry<25>, fill_entry<26>, fill_entry<27>, fill_entry<28>, fill_entry<29>, fill_entry<2>, fill_entry<30>, fill_entry<31>, fill_entry<3>, fill_entry<4>, fill_entry<5>, fill_entry<6>, fill_entry<7>, fill_entry<8>, fill_entry<9>.
-WARNING:Xst:2042 - Unit cache_1: 32 internal tristates are replaced by logic (pull-up yes): fill_entry<0>, fill_entry<10>, fill_entry<11>, fill_entry<12>, fill_entry<13>, fill_entry<14>, fill_entry<15>, fill_entry<16>, fill_entry<17>, fill_entry<18>, fill_entry<19>, fill_entry<1>, fill_entry<20>, fill_entry<21>, fill_entry<22>, fill_entry<23>, fill_entry<24>, fill_entry<25>, fill_entry<26>, fill_entry<27>, fill_entry<28>, fill_entry<29>, fill_entry<2>, fill_entry<30>, fill_entry<31>, fill_entry<3>, fill_entry<4>, fill_entry<5>, fill_entry<6>, fill_entry<7>, fill_entry<8>, fill_entry<9>.
 
 Optimizing unit <top> ...
-
-Optimizing unit <cache_1> ...
-
-Optimizing unit <cache_2> ...
 
 Mapping all equations...
 Building and optimizing final netlist ...
@@ -478,27 +389,25 @@ Design Statistics
 # IOs                              : 115
 
 Cell Usage :
-# BELS                             : 364
+# BELS                             : 351
 #      GND                         : 1
-#      INV                         : 1
+#      INV                         : 3
 #      LUT1                        : 26
-#      LUT2                        : 8
-#      LUT3                        : 10
-#      LUT4                        : 51
-#      LUT5                        : 48
-#      LUT6                        : 109
-#      MUXCY                       : 49
-#      MUXF7                       : 32
+#      LUT2                        : 6
+#      LUT2_L                      : 1
+#      LUT3                        : 43
+#      LUT3_L                      : 2
+#      LUT4                        : 148
+#      MUXCY                       : 59
+#      MUXF5                       : 33
 #      VCC                         : 1
 #      XORCY                       : 28
 # FlipFlops/Latches                : 108
-#      FD                          : 71
-#      FDR                         : 8
-#      FDRE                        : 28
+#      FD                          : 64
+#      FDR                         : 3
+#      FDRE                        : 38
+#      FDRS                        : 2
 #      LD                          : 1
-# RAMS                             : 38
-#      RAM64M                      : 34
-#      RAM64X1D                    : 4
 # Clock Buffers                    : 3
 #      BUFG                        : 1
 #      BUFGP                       : 2
@@ -506,35 +415,22 @@ Cell Usage :
 #      IBUF                        : 36
 #      IOBUF                       : 64
 #      OBUF                        : 13
+# Others                           : 2
+#      cache                       : 2
 =========================================================================
 
 Device utilization summary:
 ---------------------------
 
-Selected Device : 5vlx110tff1136-2 
+Selected Device : 3s1600efg320-4 
 
-
-Slice Logic Utilization: 
- Number of Slice Registers:             107  out of  69120     0%  
- Number of Slice LUTs:                  397  out of  69120     0%  
-    Number used as Logic:               253  out of  69120     0%  
-    Number used as Memory:              144  out of  17920     0%  
-       Number used as RAM:              144
-
-Slice Logic Distribution: 
- Number of LUT Flip Flop pairs used:    415
-   Number with an unused Flip Flop:     308  out of    415    74%  
-   Number with an unused LUT:            18  out of    415     4%  
-   Number of fully used LUT-FF pairs:    89  out of    415    21%  
-   Number of unique control sets:         6
-
-IO Utilization: 
+ Number of Slices:                      130  out of  14752     0%  
+ Number of Slice Flip Flops:            107  out of  29504     0%  
+ Number of 4 input LUTs:                229  out of  29504     0%  
  Number of IOs:                         115
- Number of bonded IOBs:                 115  out of    640    17%  
-    IOB Flip Flops/Latches:               1
-
-Specific Feature Utilization:
- Number of BUFG/BUFGCTRLs:                3  out of     32     9%  
+ Number of bonded IOBs:                 115  out of    250    46%  
+    IOB Flip Flops:                       1
+ Number of GCLKs:                         3  out of     24    12%  
 
 ---------------------------
 Partition Resource Summary:
@@ -557,7 +453,7 @@ Clock Information:
 -----------------------------------+------------------------+-------+
 Clock Signal                       | Clock buffer(FF name)  | Load  |
 -----------------------------------+------------------------+-------+
-bus_clk                            | BUFGP                  | 112   |
+bus_clk                            | BUFGP                  | 74    |
 clk                                | BUFGP                  | 33    |
 busy                               | IBUF+BUFG              | 1     |
 -----------------------------------+------------------------+-------+
@@ -568,12 +464,12 @@ No asynchronous control signals found in this design
 
 Timing Summary:
 ---------------
-Speed Grade: -2
+Speed Grade: -4
 
-   Minimum period: 5.751ns (Maximum Frequency: 173.872MHz)
-   Minimum input arrival time before clock: 5.718ns
-   Maximum output required time after clock: 6.196ns
-   Maximum combinational path delay: 6.162ns
+   Minimum period: 10.368ns (Maximum Frequency: 96.451MHz)
+   Minimum input arrival time before clock: 15.985ns
+   Maximum output required time after clock: 11.088ns
+   Maximum combinational path delay: 13.858ns
 
 Timing Detail:
 --------------
@@ -581,205 +477,225 @@ All values displayed in nanoseconds (ns)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'bus_clk'
-  Clock period: 5.751ns (frequency: 173.872MHz)
-  Total number of paths / destination ports: 20516 / 79
+  Clock period: 8.758ns (frequency: 114.181MHz)
+  Total number of paths / destination ports: 1266 / 23
 -------------------------------------------------------------------------
-Delay:               5.751ns (Levels of Logic = 15)
-  Source:            GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (RAM)
-  Destination:       GEN_CACHE.C_CTL/ICACHE/Mram_cache242 (RAM)
+Delay:               8.758ns (Levels of Logic = 20)
+  Source:            GEN_CACHE.MEM_CTL/data_reg_1 (FF)
+  Destination:       GEN_CACHE.MEM_CTL/cntr_6 (FF)
   Source Clock:      bus_clk rising
   Destination Clock: bus_clk rising
 
-  Data Path: GEN_CACHE.C_CTL/ICACHE/Mram_cache232 to GEN_CACHE.C_CTL/ICACHE/Mram_cache242
+  Data Path: GEN_CACHE.MEM_CTL/data_reg_1 to GEN_CACHE.MEM_CTL/cntr_6
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     RAM64X1D:WCLK->DPO    1   1.122   0.487  GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (GEN_CACHE.C_CTL/ICACHE/N139)
-     LUT5:I3->O            2   0.086   0.666  GEN_CACHE.C_CTL/ICACHE/hit_and0000_SW0 (N48)
-     LUT6:I2->O          100   0.086   0.531  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
-     LUT5:I4->O            3   0.086   0.609  GEN_CACHE.C_CTL/addr_out<5>1 (mem_cache_addr<5>)
-     LUT6:I3->O            1   0.086   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
-     MUXCY:CI->O           9   0.222   0.449  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/state_cmp_ne0000)
-     LUT6:I5->O           13   0.086   0.342  GEN_CACHE.C_CTL/ICACHE/write_ctrl1 (GEN_CACHE.C_CTL/ICACHE/write_ctrl1)
-     RAM64M:WE                 0.408          GEN_CACHE.C_CTL/ICACHE/Mram_cache2
+     FD:C->Q               1   0.591   0.455  GEN_CACHE.MEM_CTL/data_reg_1 (GEN_CACHE.MEM_CTL/data_reg_1)
+     LUT4:I2->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_lut<0> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_lut<0>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<0> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<0>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<1>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<2>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<3>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<10> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<11> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<12> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<13> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<14> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<14>)
+     MUXCY:CI->O           4   0.459   0.622  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<15>)
+     LUT4:I2->O            2   0.704   0.451  GEN_CACHE.MEM_CTL/state_FSM_FFd2-In (GEN_CACHE.MEM_CTL/state_FSM_FFd2-In)
+     LUT4:I3->O            1   0.704   0.455  GEN_CACHE.MEM_CTL/cntr_or0000_SW0 (N88)
+     LUT4:I2->O            7   0.704   0.708  GEN_CACHE.MEM_CTL/cntr_or0000 (GEN_CACHE.MEM_CTL/cntr_or0000)
+     FDRE:R                    0.911          GEN_CACHE.MEM_CTL/cntr_0
     ----------------------------------------
-    Total                      5.751ns (2.669ns logic, 3.083ns route)
-                                       (46.4% logic, 53.6% route)
+    Total                      8.758ns (6.067ns logic, 2.691ns route)
+                                       (69.3% logic, 30.7% route)
 
 =========================================================================
 Timing constraint: Default period analysis for Clock 'clk'
-  Clock period: 5.064ns (frequency: 197.482MHz)
-  Total number of paths / destination ports: 1470 / 36
+  Clock period: 10.368ns (frequency: 96.451MHz)
+  Total number of paths / destination ports: 1472 / 41
 -------------------------------------------------------------------------
-Delay:               5.064ns (Levels of Logic = 33)
-  Source:            GEN_CACHE.C_CTL/start_addr_4 (FF)
+Delay:               10.368ns (Levels of Logic = 33)
+  Source:            GEN_CACHE.C_CTL/cntr_2 (FF)
   Destination:       GEN_CACHE.C_CTL/cntr_2 (FF)
   Source Clock:      clk rising
   Destination Clock: clk rising
 
-  Data Path: GEN_CACHE.C_CTL/start_addr_4 to GEN_CACHE.C_CTL/cntr_2
+  Data Path: GEN_CACHE.C_CTL/cntr_2 to GEN_CACHE.C_CTL/cntr_2
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDRE:C->Q             1   0.396   0.487  GEN_CACHE.C_CTL/start_addr_4 (GEN_CACHE.C_CTL/start_addr_4)
-     LUT2:I0->O            1   0.086   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_lut<4> (GEN_CACHE.C_CTL/Madd_filler_addr_lut<4>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<4> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<4>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<5> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<5>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<6> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<6>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<7> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<7>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<8> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<8>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<9> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<9>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<10> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<10>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<11> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<11>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<12> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<12>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<13> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<13>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<14> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<14>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<15> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<15>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<16> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<16>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<17> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<17>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<18> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<18>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<19> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<19>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<20> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<20>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<21> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<21>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<22> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<22>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<23> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<23>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<24> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<24>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<25> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<25>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<26> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<26>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<27> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<27>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<28> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<28>)
-     XORCY:CI->O           1   0.300   0.600  GEN_CACHE.C_CTL/Madd_filler_addr_xor<29> (GEN_CACHE.C_CTL/filler_addr<29>)
-     LUT5:I2->O            2   0.086   0.604  GEN_CACHE.C_CTL/addr_out<29>1 (mem_cache_addr<29>)
-     LUT6:I3->O            1   0.086   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<9>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
-     MUXCY:CI->O           9   0.222   0.449  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/state_cmp_ne0000)
-     LUT6:I5->O            3   0.086   0.421  GEN_CACHE.C_CTL/cntr_and00002 (GEN_CACHE.C_CTL/cntr_and0000)
-     LUT2:I1->O            1   0.086   0.000  GEN_CACHE.C_CTL/cntr_0_rstpot (GEN_CACHE.C_CTL/cntr_0_rstpot)
-     FDR:D                    -0.022          GEN_CACHE.C_CTL/cntr_0
+     FDRE:C->Q             5   0.591   0.712  GEN_CACHE.C_CTL/cntr_2 (GEN_CACHE.C_CTL/cntr_2)
+     LUT2:I1->O            1   0.704   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_lut<4> (GEN_CACHE.C_CTL/Madd_filler_addr_lut<4>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<4> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<5> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<6> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<7> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<8> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<9> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<10> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<11> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<12> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<13> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<14> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<14>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<15> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<15>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<16> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<16>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<17> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<17>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<18> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<18>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<19> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<19>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<20> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<20>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<21> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<21>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<22> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<22>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<23> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<23>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<24> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<24>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<25> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<25>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<26> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<26>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<27> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<27>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<28> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<28>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<29> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<29>)
+     MUXCY:CI->O           0   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<30> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<30>)
+     XORCY:CI->O           1   0.804   0.455  GEN_CACHE.C_CTL/Madd_filler_addr_xor<31> (GEN_CACHE.C_CTL/filler_addr<31>)
+     LUT3:I2->O            2   0.704   0.451  GEN_CACHE.C_CTL/addr_out<31>1 (mem_cache_addr<31>)
+     LUT4:I3->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<15>)
+     MUXCY:S->O            4   0.864   0.591  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15>)
+     LUT4:I3->O            3   0.704   0.531  GEN_CACHE.C_CTL/cntr_and00001 (GEN_CACHE.C_CTL/cntr_and0000)
+     FDRE:CE                   0.555          GEN_CACHE.C_CTL/cntr_0
     ----------------------------------------
-    Total                      5.064ns (2.504ns logic, 2.560ns route)
-                                       (49.4% logic, 50.6% route)
+    Total                     10.368ns (7.628ns logic, 2.740ns route)
+                                       (73.6% logic, 26.4% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'bus_clk'
-  Total number of paths / destination ports: 83134 / 235
+  Total number of paths / destination ports: 6570 / 77
 -------------------------------------------------------------------------
-Offset:              5.718ns (Levels of Logic = 17)
-  Source:            addr<6> (PAD)
-  Destination:       GEN_CACHE.C_CTL/ICACHE/Mram_cache242 (RAM)
+Offset:              15.985ns (Levels of Logic = 23)
+  Source:            wr (PAD)
+  Destination:       GEN_CACHE.MEM_CTL/cntr_6 (FF)
   Destination Clock: bus_clk rising
 
-  Data Path: addr<6> to GEN_CACHE.C_CTL/ICACHE/Mram_cache242
+  Data Path: wr to GEN_CACHE.MEM_CTL/cntr_6
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             6   0.694   0.309  addr_6_IBUF (addr_6_IBUF)
-     RAM64X1D:DPRA4->DPO    1   0.086   0.487  GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (GEN_CACHE.C_CTL/ICACHE/N139)
-     LUT5:I3->O            2   0.086   0.666  GEN_CACHE.C_CTL/ICACHE/hit_and0000_SW0 (N48)
-     LUT6:I2->O          100   0.086   0.531  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
-     LUT5:I4->O            3   0.086   0.609  GEN_CACHE.C_CTL/addr_out<5>1 (mem_cache_addr<5>)
-     LUT6:I3->O            1   0.086   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
-     MUXCY:CI->O           9   0.222   0.449  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/state_cmp_ne0000)
-     LUT6:I5->O           13   0.086   0.342  GEN_CACHE.C_CTL/ICACHE/write_ctrl1 (GEN_CACHE.C_CTL/ICACHE/write_ctrl1)
-     RAM64M:WE                 0.408          GEN_CACHE.C_CTL/ICACHE/Mram_cache2
+     IBUF:I->O            44   1.218   1.441  wr_IBUF (wr_IBUF)
+     LUT3:I0->O           68   0.704   1.449  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
+     LUT3:I0->O           33   0.704   1.438  GEN_CACHE.C_CTL/addr_out<10>11 (N01)
+     LUT3:I0->O            3   0.704   0.706  GEN_CACHE.C_CTL/addr_out<3>1 (mem_cache_addr<3>)
+     LUT4:I0->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14>)
+     MUXCY:CI->O           4   0.459   0.591  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15>)
+     LUT4:I3->O            2   0.704   0.451  GEN_CACHE.MEM_CTL/state_FSM_FFd2-In (GEN_CACHE.MEM_CTL/state_FSM_FFd2-In)
+     LUT4:I3->O            1   0.704   0.455  GEN_CACHE.MEM_CTL/cntr_or0000_SW0 (N88)
+     LUT4:I2->O            7   0.704   0.708  GEN_CACHE.MEM_CTL/cntr_or0000 (GEN_CACHE.MEM_CTL/cntr_or0000)
+     FDRE:R                    0.911          GEN_CACHE.MEM_CTL/cntr_0
     ----------------------------------------
-    Total                      5.718ns (2.327ns logic, 3.391ns route)
-                                       (40.7% logic, 59.3% route)
+    Total                     15.985ns (8.747ns logic, 7.238ns route)
+                                       (54.7% logic, 45.3% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'clk'
-  Total number of paths / destination ports: 4639 / 66
+  Total number of paths / destination ports: 1241 / 66
 -------------------------------------------------------------------------
-Offset:              5.475ns (Levels of Logic = 18)
-  Source:            addr<6> (PAD)
+Offset:              13.138ns (Levels of Logic = 21)
+  Source:            wr (PAD)
   Destination:       GEN_CACHE.C_CTL/cntr_2 (FF)
   Destination Clock: clk rising
 
-  Data Path: addr<6> to GEN_CACHE.C_CTL/cntr_2
+  Data Path: wr to GEN_CACHE.C_CTL/cntr_2
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             6   0.694   0.309  addr_6_IBUF (addr_6_IBUF)
-     RAM64X1D:DPRA4->DPO    1   0.086   0.487  GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (GEN_CACHE.C_CTL/ICACHE/N139)
-     LUT5:I3->O            2   0.086   0.666  GEN_CACHE.C_CTL/ICACHE/hit_and0000_SW0 (N48)
-     LUT6:I2->O          100   0.086   0.531  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
-     LUT5:I4->O            3   0.086   0.609  GEN_CACHE.C_CTL/addr_out<5>1 (mem_cache_addr<5>)
-     LUT6:I3->O            1   0.086   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
-     MUXCY:CI->O           9   0.222   0.449  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/state_cmp_ne0000)
-     LUT6:I5->O            3   0.086   0.421  GEN_CACHE.C_CTL/cntr_and00002 (GEN_CACHE.C_CTL/cntr_and0000)
-     LUT2:I1->O            1   0.086   0.000  GEN_CACHE.C_CTL/cntr_0_rstpot (GEN_CACHE.C_CTL/cntr_0_rstpot)
-     FDR:D                    -0.022          GEN_CACHE.C_CTL/cntr_0
+     IBUF:I->O            44   1.218   1.441  wr_IBUF (wr_IBUF)
+     LUT3:I0->O           68   0.704   1.449  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
+     LUT3:I0->O           33   0.704   1.438  GEN_CACHE.C_CTL/addr_out<10>11 (N01)
+     LUT3:I0->O            3   0.704   0.706  GEN_CACHE.C_CTL/addr_out<3>1 (mem_cache_addr<3>)
+     LUT4:I0->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14>)
+     MUXCY:CI->O           4   0.459   0.591  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15>)
+     LUT4:I3->O            3   0.704   0.531  GEN_CACHE.C_CTL/cntr_and00001 (GEN_CACHE.C_CTL/cntr_and0000)
+     FDRE:CE                   0.555          GEN_CACHE.C_CTL/cntr_0
     ----------------------------------------
-    Total                      5.475ns (2.005ns logic, 3.470ns route)
-                                       (36.6% logic, 63.4% route)
+    Total                     13.138ns (6.983ns logic, 6.155ns route)
+                                       (53.2% logic, 46.8% route)
 
 =========================================================================
 Timing constraint: Default OFFSET IN BEFORE for Clock 'busy'
-  Total number of paths / destination ports: 1512 / 1
+  Total number of paths / destination ports: 391 / 1
 -------------------------------------------------------------------------
-Offset:              5.218ns (Levels of Logic = 17)
-  Source:            addr<6> (PAD)
+Offset:              14.070ns (Levels of Logic = 23)
+  Source:            wr (PAD)
   Destination:       GEN_CACHE.C_CTL/done_out (LATCH)
   Destination Clock: busy falling
 
-  Data Path: addr<6> to GEN_CACHE.C_CTL/done_out
+  Data Path: wr to GEN_CACHE.C_CTL/done_out
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             6   0.694   0.309  addr_6_IBUF (addr_6_IBUF)
-     RAM64X1D:DPRA4->DPO    1   0.086   0.487  GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (GEN_CACHE.C_CTL/ICACHE/N139)
-     LUT5:I3->O            2   0.086   0.666  GEN_CACHE.C_CTL/ICACHE/hit_and0000_SW0 (N48)
-     LUT6:I2->O          100   0.086   0.531  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
-     LUT5:I4->O            3   0.086   0.609  GEN_CACHE.C_CTL/addr_out<5>1 (mem_cache_addr<5>)
-     LUT6:I3->O            1   0.086   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
-     MUXCY:CI->O           9   0.222   0.699  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/state_cmp_ne0000)
-     LUT6:I2->O            1   0.086   0.000  GEN_CACHE.C_CTL/done_out_mux0002 (GEN_CACHE.C_CTL/done_out_mux0002)
-     LD:D                     -0.066          GEN_CACHE.C_CTL/done_out
+     IBUF:I->O            44   1.218   1.441  wr_IBUF (wr_IBUF)
+     LUT3:I0->O           68   0.704   1.449  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
+     LUT3:I0->O           33   0.704   1.438  GEN_CACHE.C_CTL/addr_out<10>11 (N01)
+     LUT3:I0->O            3   0.704   0.706  GEN_CACHE.C_CTL/addr_out<3>1 (mem_cache_addr<3>)
+     LUT4:I0->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14>)
+     MUXCY:CI->O           4   0.459   0.666  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15>)
+     LUT4:I1->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/done_out1 (GEN_CACHE.MEM_CTL/done_out)
+     MUXF5:I1->O           3   0.321   0.610  GEN_CACHE.MEM_CTL/done_out_f5 (mem_cache_done)
+     LUT3:I1->O            1   0.704   0.000  GEN_CACHE.C_CTL/done_out_mux00021 (GEN_CACHE.C_CTL/done_out_mux0002)
+     LD:D                      0.308          GEN_CACHE.C_CTL/done_out
     ----------------------------------------
-    Total                      5.218ns (1.919ns logic, 3.299ns route)
-                                       (36.8% logic, 63.2% route)
+    Total                     14.070ns (7.761ns logic, 6.309ns route)
+                                       (55.2% logic, 44.8% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'busy'
   Total number of paths / destination ports: 1 / 1
 -------------------------------------------------------------------------
-Offset:              3.040ns (Levels of Logic = 1)
+Offset:              4.368ns (Levels of Logic = 1)
   Source:            GEN_CACHE.C_CTL/done_out (LATCH)
   Destination:       done (PAD)
   Source Clock:      busy falling
@@ -788,95 +704,159 @@ Offset:              3.040ns (Levels of Logic = 1)
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     LD:G->Q               1   0.610   0.286  GEN_CACHE.C_CTL/done_out (GEN_CACHE.C_CTL/done_out)
-     OBUF:I->O                 2.144          done_OBUF (done)
+     LD:G->Q               1   0.676   0.420  GEN_CACHE.C_CTL/done_out (GEN_CACHE.C_CTL/done_out)
+     OBUF:I->O                 3.272          done_OBUF (done)
     ----------------------------------------
-    Total                      3.040ns (2.754ns logic, 0.286ns route)
-                                       (90.6% logic, 9.4% route)
-
-=========================================================================
-Timing constraint: Default OFFSET OUT AFTER for Clock 'bus_clk'
-  Total number of paths / destination ports: 910 / 43
--------------------------------------------------------------------------
-Offset:              6.196ns (Levels of Logic = 5)
-  Source:            GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (RAM)
-  Destination:       data<2> (PAD)
-  Source Clock:      bus_clk rising
-
-  Data Path: GEN_CACHE.C_CTL/ICACHE/Mram_cache232 to data<2>
-                                Gate     Net
-    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
-    ----------------------------------------  ------------
-     RAM64X1D:WCLK->DPO    1   1.122   0.487  GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (GEN_CACHE.C_CTL/ICACHE/N139)
-     LUT5:I3->O            2   0.086   0.666  GEN_CACHE.C_CTL/ICACHE/hit_and0000_SW0 (N48)
-     LUT6:I2->O          100   0.086   1.020  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
-     LUT6:I0->O            1   0.086   0.000  GEN_CACHE.C_CTL/data_in_mux0000<2>1 (GEN_CACHE.C_CTL/data_in_mux0000<2>)
-     MUXF7:I1->O           1   0.214   0.286  GEN_CACHE.C_CTL/data_in_mux0000<2>_f7 (data_2_IOBUF)
-     IOBUF:I->IO               2.144          data_2_IOBUF (data<2>)
-    ----------------------------------------
-    Total                      6.196ns (3.738ns logic, 2.458ns route)
-                                       (60.3% logic, 39.7% route)
+    Total                      4.368ns (3.948ns logic, 0.420ns route)
+                                       (90.4% logic, 9.6% route)
 
 =========================================================================
 Timing constraint: Default OFFSET OUT AFTER for Clock 'clk'
-  Total number of paths / destination ports: 43 / 9
+  Total number of paths / destination ports: 1057 / 29
 -------------------------------------------------------------------------
-Offset:              4.853ns (Levels of Logic = 7)
-  Source:            GEN_CACHE.C_CTL/start_addr_4 (FF)
-  Destination:       mem_addr<7> (PAD)
+Offset:              11.088ns (Levels of Logic = 35)
+  Source:            GEN_CACHE.C_CTL/cntr_2 (FF)
+  Destination:       GEN_CACHE.C_CTL/DCACHE:wr (PAD)
   Source Clock:      clk rising
 
-  Data Path: GEN_CACHE.C_CTL/start_addr_4 to mem_addr<7>
+  Data Path: GEN_CACHE.C_CTL/cntr_2 to GEN_CACHE.C_CTL/DCACHE:wr
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     FDRE:C->Q             1   0.396   0.487  GEN_CACHE.C_CTL/start_addr_4 (GEN_CACHE.C_CTL/start_addr_4)
-     LUT2:I0->O            1   0.086   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_lut<4> (GEN_CACHE.C_CTL/Madd_filler_addr_lut<4>)
-     MUXCY:S->O            1   0.305   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<4> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<4>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<5> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<5>)
-     MUXCY:CI->O           1   0.023   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<6> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<6>)
-     XORCY:CI->O          39   0.300   0.709  GEN_CACHE.C_CTL/Madd_filler_addr_xor<7> (GEN_CACHE.C_CTL/filler_addr<7>)
-     LUT5:I2->O            3   0.086   0.295  GEN_CACHE.C_CTL/addr_out<7>1 (mem_cache_addr<7>)
-     OBUF:I->O                 2.144          mem_addr_7_OBUF (mem_addr<7>)
+     FDRE:C->Q             5   0.591   0.712  GEN_CACHE.C_CTL/cntr_2 (GEN_CACHE.C_CTL/cntr_2)
+     LUT2:I1->O            1   0.704   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_lut<4> (GEN_CACHE.C_CTL/Madd_filler_addr_lut<4>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<4> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<5> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<6> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<7> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<8> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<9> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<10> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<11> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<12> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<13> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<14> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<14>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<15> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<15>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<16> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<16>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<17> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<17>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<18> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<18>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<19> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<19>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<20> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<20>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<21> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<21>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<22> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<22>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<23> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<23>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<24> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<24>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<25> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<25>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<26> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<26>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<27> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<27>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<28> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<28>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<29> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<29>)
+     MUXCY:CI->O           0   0.059   0.000  GEN_CACHE.C_CTL/Madd_filler_addr_cy<30> (GEN_CACHE.C_CTL/Madd_filler_addr_cy<30>)
+     XORCY:CI->O           1   0.804   0.455  GEN_CACHE.C_CTL/Madd_filler_addr_xor<31> (GEN_CACHE.C_CTL/filler_addr<31>)
+     LUT3:I2->O            2   0.704   0.451  GEN_CACHE.C_CTL/addr_out<31>1 (mem_cache_addr<31>)
+     LUT4:I3->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<15>)
+     MUXCY:S->O            4   0.864   0.666  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15>)
+     LUT4:I1->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/done_out1 (GEN_CACHE.MEM_CTL/done_out)
+     MUXF5:I1->O           3   0.321   0.706  GEN_CACHE.MEM_CTL/done_out_f5 (mem_cache_done)
+     LUT3:I0->O            0   0.704   0.000  GEN_CACHE.C_CTL/iwr1 (GEN_CACHE.C_CTL/iwr)
+    cache:wr                   0.000          GEN_CACHE.C_CTL/ICACHE
     ----------------------------------------
-    Total                      4.853ns (3.363ns logic, 1.490ns route)
-                                       (69.3% logic, 30.7% route)
+    Total                     11.088ns (8.098ns logic, 2.990ns route)
+                                       (73.0% logic, 27.0% route)
+
+=========================================================================
+Timing constraint: Default OFFSET OUT AFTER for Clock 'bus_clk'
+  Total number of paths / destination ports: 132 / 2
+-------------------------------------------------------------------------
+Offset:              6.696ns (Levels of Logic = 20)
+  Source:            GEN_CACHE.MEM_CTL/data_reg_1 (FF)
+  Destination:       GEN_CACHE.C_CTL/DCACHE:wr (PAD)
+  Source Clock:      bus_clk rising
+
+  Data Path: GEN_CACHE.MEM_CTL/data_reg_1 to GEN_CACHE.C_CTL/DCACHE:wr
+                                Gate     Net
+    Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
+    ----------------------------------------  ------------
+     FD:C->Q               1   0.591   0.455  GEN_CACHE.MEM_CTL/data_reg_1 (GEN_CACHE.MEM_CTL/data_reg_1)
+     LUT4:I2->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_lut<0> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_lut<0>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<0> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<0>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<1>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<2>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<3>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<10> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<11> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<12> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<13> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<14> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<14>)
+     MUXCY:CI->O           4   0.459   0.762  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0001_cy<15>)
+     LUT4:I0->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/done_out1 (GEN_CACHE.MEM_CTL/done_out)
+     MUXF5:I1->O           3   0.321   0.706  GEN_CACHE.MEM_CTL/done_out_f5 (mem_cache_done)
+     LUT3:I0->O            0   0.704   0.000  GEN_CACHE.C_CTL/iwr1 (GEN_CACHE.C_CTL/iwr)
+    cache:wr                   0.000          GEN_CACHE.C_CTL/ICACHE
+    ----------------------------------------
+    Total                      6.696ns (4.773ns logic, 1.923ns route)
+                                       (71.3% logic, 28.7% route)
 
 =========================================================================
 Timing constraint: Default path analysis
-  Total number of paths / destination ports: 3888 / 76
+  Total number of paths / destination ports: 2019 / 168
 -------------------------------------------------------------------------
-Delay:               6.162ns (Levels of Logic = 7)
-  Source:            addr<6> (PAD)
-  Destination:       data<2> (PAD)
+Delay:               13.858ns (Levels of Logic = 23)
+  Source:            wr (PAD)
+  Destination:       GEN_CACHE.C_CTL/DCACHE:wr (PAD)
 
-  Data Path: addr<6> to data<2>
+  Data Path: wr to GEN_CACHE.C_CTL/DCACHE:wr
                                 Gate     Net
     Cell:in->out      fanout   Delay   Delay  Logical Name (Net Name)
     ----------------------------------------  ------------
-     IBUF:I->O             6   0.694   0.309  addr_6_IBUF (addr_6_IBUF)
-     RAM64X1D:DPRA4->DPO    1   0.086   0.487  GEN_CACHE.C_CTL/ICACHE/Mram_cache232 (GEN_CACHE.C_CTL/ICACHE/N139)
-     LUT5:I3->O            2   0.086   0.666  GEN_CACHE.C_CTL/ICACHE/hit_and0000_SW0 (N48)
-     LUT6:I2->O          100   0.086   1.020  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
-     LUT6:I0->O            1   0.086   0.000  GEN_CACHE.C_CTL/data_in_mux0000<2>1 (GEN_CACHE.C_CTL/data_in_mux0000<2>)
-     MUXF7:I1->O           1   0.214   0.286  GEN_CACHE.C_CTL/data_in_mux0000<2>_f7 (data_2_IOBUF)
-     IOBUF:I->IO               2.144          data_2_IOBUF (data<2>)
+     IBUF:I->O            44   1.218   1.441  wr_IBUF (wr_IBUF)
+     LUT3:I0->O           68   0.704   1.449  GEN_CACHE.C_CTL/data_in_and00001 (GEN_CACHE.C_CTL/data_in_and0000)
+     LUT3:I0->O           33   0.704   1.438  GEN_CACHE.C_CTL/addr_out<10>11 (N01)
+     LUT3:I0->O            3   0.704   0.706  GEN_CACHE.C_CTL/addr_out<3>1 (mem_cache_addr<3>)
+     LUT4:I0->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_lut<1>)
+     MUXCY:S->O            1   0.464   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<1>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<2>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<3>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<4>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<5>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<6>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<7>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<8>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<9>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<10>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<11>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<12>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<13>)
+     MUXCY:CI->O           1   0.059   0.000  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<14>)
+     MUXCY:CI->O           4   0.459   0.666  GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15> (GEN_CACHE.MEM_CTL/Mcompar_state_cmp_ne0000_cy<15>)
+     LUT4:I1->O            1   0.704   0.000  GEN_CACHE.MEM_CTL/done_out1 (GEN_CACHE.MEM_CTL/done_out)
+     MUXF5:I1->O           3   0.321   0.706  GEN_CACHE.MEM_CTL/done_out_f5 (mem_cache_done)
+     LUT3:I0->O            0   0.704   0.000  GEN_CACHE.C_CTL/iwr1 (GEN_CACHE.C_CTL/iwr)
+    cache:wr                   0.000          GEN_CACHE.C_CTL/ICACHE
     ----------------------------------------
-    Total                      6.162ns (3.396ns logic, 2.766ns route)
-                                       (55.1% logic, 44.9% route)
+    Total                     13.858ns (7.453ns logic, 6.405ns route)
+                                       (53.8% logic, 46.2% route)
 
 =========================================================================
+WARNING:Xst:616 - Invalid property "CACHE_DEPTH 64": Did not attach to GEN_CACHE.C_CTL/DCACHE.
+WARNING:Xst:616 - Invalid property "CACHE_DEPTH 128": Did not attach to GEN_CACHE.C_CTL/ICACHE.
 
 
-Total REAL time to Xst completion: 11.00 secs
-Total CPU time to Xst completion: 9.01 secs
+Total REAL time to Xst completion: 9.00 secs
+Total CPU time to Xst completion: 6.93 secs
  
 --> 
 
 
-Total memory usage is 197324 kilobytes
+Total memory usage is 350380 kilobytes
 
 Number of errors   :    0 (   0 filtered)
 Number of warnings :   11 (   0 filtered)
-Number of infos    :   18 (   0 filtered)
+Number of infos    :   16 (   0 filtered)
 
