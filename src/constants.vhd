@@ -41,6 +41,7 @@ package constants is
    constant BNE_OP : std_logic_vector(31 downto 26) := "000101";    -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
    constant LUI_OP : std_logic_vector(31 downto 26) := "001111";    -- found at http://www.mrc.uidaho.edu/mrc/people/jff/digital/MIPSir.html 
 	constant IMM_OP : std_logic_vector(31 downto 26) := "111111";    -- designed to load a vaue directly into registers
+	constant BAD_OP : std_logic_vector(31 downto 26) := "110110";    -- Bad operation that stops the processor in it's tracks
       
    -- From Bus Requirements
    constant BUS_BW : integer := 32;

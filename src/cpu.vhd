@@ -161,6 +161,9 @@ begin
 			regs(conv_integer(RT)) <= "0000000000000000" & IMM;
          report "R" & integer'image(conv_integer(RT)) & "<=" & integer'image(conv_integer(IMM)) severity NOTE;
          report "Completed IMM R" & integer'image(conv_integer(RT)) & " " & integer'image(conv_integer(IMM)) severity NOTE;
+		elsif OPCODE = BAD_OP then
+			report "BAD Opcode, IMM value:" & integer'image(conv_integer(IMM)) severity ERROR;
+			wait;
       else
          report "cpu.vhd: Unknown OP Code" severity ERROR;
          wait; -- Kill the simulation on a bad instruction.

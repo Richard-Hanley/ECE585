@@ -169,9 +169,15 @@ unsigned int assemble(char* line)
                  ((t << RTSTART) & RTMASK) | ((d << RDSTART) & RDMASK) | 
                  ((SLT_FUNC << FUSTART) & FUMASK);
 	}
-    else if(stcmp(opcode, "BAD") == 0)
+    else if(strcmp(opcode, "BAD") == 0)
     {
-        if
+        if(sscanf(line, "BAD %i", &imm) != 1)
+        {
+            perror("Bad BAD");
+            exit(EXIT_FAILURE);
+        }
+        assembly = ((BAD_OP << OPSTART) & OPMASK | ((imm << IMSTART) & IMMASK));
+
     }
 
     else

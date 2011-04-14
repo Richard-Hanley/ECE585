@@ -1,6 +1,0 @@
-README
-
-How to generate ISE Project
-
-# xtclsh system.tcl rebuild_project
-# ise system.xise
