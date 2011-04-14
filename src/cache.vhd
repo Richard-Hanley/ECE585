@@ -75,13 +75,13 @@ begin
    hit <= '1' when aligned = '1' and check_valid = '1' and check_tag = check_tag_in else '0'; 
    data_out <= check_data;
    
-   MEM_ACCESS: process(clk) 
-   begin
+   --MEM_ACCESS: process(clk) 
+  -- begin
       --report "cache.vhd: log2(MEM_DEPTH) is " & integer'image(log2(MEM_DEPTH)) severity NOTE;
-      if rising_edge(clk) then
+     -- if rising_edge(clk) then
          check_entry <= cache(conv_integer(check_index));
-      end if;
-   end process;
+    --  end if;
+   --end process;
 
    fill_aligned <= '1' when addr_fill(1 downto 0) = "00" else '0';
    fill_tag <= fill_tag_in;

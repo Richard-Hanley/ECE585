@@ -117,10 +117,6 @@ begin
             DCACHE_HITS := DCACHE_HITS + 1;
          end if;
       end if;
-      
-      if rising_edge(clk) then
-         CLK_CNTR := CLK_CNTR + 1;
-      end if;
    end process;
    -- synthesis translate_on
    
