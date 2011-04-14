@@ -36,6 +36,9 @@ ADD R2, R1, R2
 ADD R15, R1, R15
 BNE R19, R2, -28
 LUI R31, 1024
-IMM R21, 0
+IMM R21, 1 #go back to page 1, but ignore the first STATS instruction
+IMM R18, 163 #the total number of instructions in 
+ADD R25, R18, R25
+STATS R24, R26, R27
 JR R21
 BAD 3

@@ -80,7 +80,7 @@ package constants is
    shared variable ICACHE_HITS : integer := 0;
    shared variable DCACHE_HITS : integer := 0;
    shared variable CLK_CNTR    : integer := 0;
-   constant STATS_FUNC : std_logic_vector(5 downto 0) := "111111";
+   constant STATS_FUNC : std_logic_vector(5 downto 0) := "101111";
    
    
    function log2(A : integer) return integer;
