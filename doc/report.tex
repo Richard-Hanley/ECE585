@@ -81,9 +81,35 @@ This program stresses the data caches by using all available memory to store and
 \paragraph{ Simulation Results: Test Proc }
 
 \paragraph{ Test Bouncer }
-The bouncer program stresess both the data and instruction caches by jumping in memory to addresses throughout the address range and performing calculations.  The results show that this program also benefits from having caches enabled but not as much as the Test Proc Program.  
+The ``test\_proc'' file worked quite well in testing the overall validity of the processor.  It ensured that the mock-up of the CPU could fetch and decode each of the instructions as well as testing the cache.  However, the ``boucer'' program was designed to more throughly test the cache.  The loop is fundamentally similar to the ``test\_proc'' except there is some extra debugging logic around it.  This debugging logic is designed to allow the debugger to quickly verify how many loops had been executed in the simulator.  After each store, the program would pull a piece of canned data from memory and compare it.  If this comparison failed it would execute a ``BAD'' instruction.
+
+\paragraph{}
+This ``BAD'' instruction was added to the CPU, and it stops the execution and prints some execution data.  At the end of the loop, assuming that no errors have occured the program jumps to the next page.  In this project the 2048 bytes of memory was separated into 4, 512 byte, pages.  Each page has the same program (with the exception
+of different jump and immediate values), and it's own set of random data.  So the program goes between each page, and when it reaches the end, it bounces back to the original.
 
 \paragraph{ Simulation Results: Bouncer }
+The bouncer makes use of a instructions, as well as some registers to help verify that the processor is working.  Registers R29-31 are written to whenever a page completes (page 0 writes to R29, page 1 writes to R30, etc.).  So simply by looking at the register it can be verified that the program worked properly.  Second, there is a 
+STATS instruction that is called at the beginning of the program to clock initialization time as well as at the end of each complete cycle over all 4 pages.  As a result R17 has the number of instruction cycles it takes to initialize, R24 has the number of cycles up until that point, R26 has the number of D-cache hits, and R27 has the number of Icache hits.  Another register, R25, has a count of all the insructions currently executed. The figures below show screen captures of the register file without cache and with cache.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=4in]{img/bouncer_registerfile_nocache.png}
+  \caption{Register File for Bouncer Program without Cache}
+  \label{fig:datapath}
+\end{figure}
+  
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=4in]{img/bouncer_registerfile_cache.png}
+  \caption{Register File for Bouncer Program without Cache}
+  \label{fig:datapath}
+\end{figure}
+  
+Taking the numbers from R24 (minus the starting value) and dividing them by R25 gives the CPI.  So the CPI without cache is: 
+$$CPI_{nocache} = \frac{97806 - 16}{3749} = 26.08$$
+$$CPI_{cache} = \frac{67803 - 16}{3260} = 20.79$$
+
+The cache decreases CPI by about 5 cycles.  This is important because the cache that was used here was direct mapped, and due to the bouncing nature of the program there would likely have been significant improvements had the cache been implemented with a 4-way set associative cache things would likely have improved even more. There were only 690 D-cache hits, and 
+
 
 
 \section{ Synthesis Results }
