@@ -107,16 +107,14 @@ begin
       );
       
    -- synthesis translate_off
-   METRICS_COUNTER: process(instr, ihit, dhit, wr_in)
+   METRICS_COUNTER: process(instr, ihit, dhit, wr_in, clk)
    begin
       if rising_edge(clk) then
          if ihit = '1' and instr = '1' and wr_in = '0' then
             ICACHE_HITS := ICACHE_HITS + 1;
-            wait CYCLE_TIME*3;
          end if;
          if dhit = '1' and instr = '0' and wr_in = '0' then
             DCACHE_HITS := DCACHE_HITS + 1;
-            wait CYCLE_TIME*3;
          end if;
       end if;
    end process;
