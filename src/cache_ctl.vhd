@@ -109,7 +109,7 @@ begin
    -- synthesis translate_off
    METRICS_COUNTER: process(instr, ihit, dhit, wr_in)
    begin
-      if rising_edge(ihit) or rising_edge(dhit) then
+      if rising_edge(clk) then
          if ihit = '1' and instr = '1' and wr_in = '0' then
             ICACHE_HITS := ICACHE_HITS + 1;
          end if;
