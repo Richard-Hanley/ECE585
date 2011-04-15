@@ -10,6 +10,8 @@
 \usepackage{fancyvrb} % Gives me some more options on verbatiminput
 \usepackage{url} % For wikipedia
 \usepackage{setspace}
+\usepackage{fullpage}
+
 
 \usepackage{float}
 
@@ -79,6 +81,17 @@ The design is validated using test programs and debugged using waveforms. There 
 \paragraph{ Test Proc Program Design }
 This program stresses the data caches by using all available memory to store and retrieve its results.  The results are then compared to expected results to determine if the test passed or succedded.  The speed up with and without cache was very noticeable as can be seen in the simulation results below.  
 \paragraph{ Simulation Results: Test Proc }
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=5.5in]{img/test_proc.png}
+  \caption{ The test proc program running with Cache.}
+  \label{fig:datapath}
+\end{figure}
+
+The results above show test proc programs final stages of execution.  This program generates some random data (pre simulation) performs some operations on the data and then compares the results between the python golden sample and the simulation data.  This waveform shows the operation of the cache, CPU Bus, and memory bus very effectively.  The waveform is broken into 5 sections.  The first is the reset and clock signals, the second is the Instruction and PC registers, The third is the data bus between the CPU and Cache, the forth is the data bus to memory and the fifth is internal cache signals.
+
+From this data, it is more obvious how the cache controller is designed.  The cache iwr and dwr signals, ihit, and dhit, and the cache state machines state are visible and examinable.
 
 \paragraph{ Test Bouncer }
 The bouncer program stresess both the data and instruction caches by jumping in memory to addresses throughout the address range and performing calculations.  The results show that this program also benefits from having caches enabled but not as much as the Test Proc Program.  
